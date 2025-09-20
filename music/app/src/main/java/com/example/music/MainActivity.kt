@@ -7,6 +7,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -16,8 +18,30 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-    }
 
+        val bottomNavigationView = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_navigation)
+        supportFragmentManager.beginTransaction().replace(R.id.container, HomeFragment()).commit();
+
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.home -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.container, HomeFragment())
+                        .commit()
+                    true
+                }
+                R.id.search_button -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.container, SearchFragment())
+                        .commit()
+                    true
+                }
+                else -> false
+            }
+        }
+
+
+    }
     override fun onDestroy() {
         super.onDestroy()
     }

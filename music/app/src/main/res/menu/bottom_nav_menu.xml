@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/home"
         android:title="Home"
-        android:icon="@android:drawable/ic_input_add"/>
+        android:icon="@drawable/home"/>
 <!--    <item android:id="@+id/playlist"
         android:title="Playlist"
         android:icon="@android:drawable/ic_lock_idle_alarm"/>
