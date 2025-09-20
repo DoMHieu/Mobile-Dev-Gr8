@@ -13,25 +13,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         app:menu="@menu/bottom_nav_menu"
-        android:background="#F3EDF7">
+        >
 
     </com.google.android.material.bottomnavigation.BottomNavigationView>
 
-    <Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#F3EDF7"
-        android:id="@+id/toolbar"
-        android:theme="@style/Widget.AppCompat.Toolbar"
-        >
 
-    </Toolbar>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/container"
-        android:layout_below="@id/toolbar"
         android:layout_above="@id/bottom_navigation">
 
         <ScrollView
@@ -51,7 +42,7 @@
                     android:text="Quick play"
                     android:textSize="28dp"
                     android:paddingLeft="24dp"
-                    android:textColor="@color/black"/>
+                    />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -67,7 +58,7 @@
                     android:id="@+id/textView10"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Explorer Genre"
+                    android:text="Explore Genre"
                     android:textSize="28dp"
                     android:paddingLeft="24dp"/>
 
@@ -105,4 +96,3 @@
     </FrameLayout>
 
 </RelativeLayout>
-
