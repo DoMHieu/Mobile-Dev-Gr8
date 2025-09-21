@@ -36,6 +36,12 @@ class MainActivity : AppCompatActivity() {
                         .commit()
                     true
                 }
+                R.id.control -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.container, PlayerFragment())
+                        .commit()
+                    true
+                }
                 else -> false
             }
         }

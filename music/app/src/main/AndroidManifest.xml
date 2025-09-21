@@ -13,6 +13,7 @@
         android:theme="@style/Theme.Music">
         <activity
             android:name=".MainActivity"
+            android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,5 +22,6 @@
             </intent-filter>
         </activity>
     </application>
+
 
 </manifest>
