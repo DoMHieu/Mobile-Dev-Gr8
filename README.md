@@ -2,7 +2,7 @@
 A group project about developing a mobile-base android app about a random topic that the Professor choose randomly <br>
 
 Giao việc:<br>
-1 Quản lý tiến độ
+1 Quản lý tiến độ <br>
 3 front end (Đào Minh Hiếu + Ngọc + Hiển)<br>
 2 back end (Gia Huy + Đỗ Minh Hiếu (tạm thời: Mai Hùng))<br>
 1 tester + reporter + presentation (Chó Mai Hùng)<br>
