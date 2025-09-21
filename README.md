@@ -1,5 +1,5 @@
 # Mobile-Dev-Gr8
-A group project about developing a mobile-base android app about a random topic that the Professor choose randomly <br>
+Khuyến khích sử dụng kotlin vì code nó ngắn gọn và dễ đọc hơn, nhưng nếu không dùng được thì cũng không sao <br>
 
 Giao việc:<br>
 1 Quản lý tiến độ <br>
