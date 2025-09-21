@@ -48,7 +48,7 @@
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
+                        android:src="@drawable/cover"
                         android:background="@drawable/rounded_corner"
                         android:clipToOutline="true" />
 
@@ -57,7 +57,7 @@
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
+                        android:src="@drawable/cover"
                         android:background="@drawable/rounded_corner"
                         android:clipToOutline="true" />
 
@@ -66,7 +66,7 @@
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
+                        android:src="@drawable/cover"
                         android:background="@drawable/rounded_corner"
                         android:clipToOutline="true" />
 
@@ -75,7 +75,7 @@
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
+                        android:src="@drawable/cover"
                         android:background="@drawable/rounded_corner"
                         android:clipToOutline="true" />
 
@@ -84,7 +84,7 @@
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
+                        android:src="@drawable/cover"
                         android:background="@drawable/rounded_corner"
                         android:clipToOutline="true" />
 
@@ -93,7 +93,7 @@
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
+                        android:src="@drawable/cover"
                         android:background="@drawable/rounded_corner"
                         android:clipToOutline="true" />
 
@@ -129,7 +129,7 @@
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
+                        android:src="@drawable/cover"
                         android:background="@drawable/rounded_corner"
                         android:clipToOutline="true"/>
 
@@ -138,7 +138,7 @@
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
+                        android:src="@drawable/cover"
                         android:background="@drawable/rounded_corner"
                         android:clipToOutline="true"/>
 
@@ -147,7 +147,7 @@
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
+                        android:src="@drawable/cover"
                         android:background="@drawable/rounded_corner"
                         android:clipToOutline="true"/>
 
@@ -156,25 +156,7 @@
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
-                        android:background="@drawable/rounded_corner"
-                        android:clipToOutline="true"/>
-
-                    <ImageView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_margin="8dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
-                        android:background="@drawable/rounded_corner"
-                        android:clipToOutline="true"/>
-
-                    <ImageView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_margin="8dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
+                        android:src="@drawable/cover"
                         android:background="@drawable/rounded_corner"
                         android:clipToOutline="true"/>
 
@@ -209,7 +191,7 @@
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
+                        android:src="@drawable/cover"
                         android:background="@drawable/rounded_corner"
                         android:clipToOutline="true"/>
 
@@ -218,7 +200,7 @@
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
+                        android:src="@drawable/cover"
                         android:background="@drawable/rounded_corner"
                         android:clipToOutline="true"/>
 
@@ -227,7 +209,7 @@
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
+                        android:src="@drawable/cover"
                         android:background="@drawable/rounded_corner"
                         android:clipToOutline="true"/>
 
@@ -236,25 +218,7 @@
                         android:layout_height="100dp"
                         android:layout_margin="8dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
-                        android:background="@drawable/rounded_corner"
-                        android:clipToOutline="true"/>
-
-                    <ImageView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_margin="8dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
-                        android:background="@drawable/rounded_corner"
-                        android:clipToOutline="true"/>
-
-                    <ImageView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_margin="8dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/miku"
+                        android:src="@drawable/cover"
                         android:background="@drawable/rounded_corner"
                         android:clipToOutline="true"/>
 
