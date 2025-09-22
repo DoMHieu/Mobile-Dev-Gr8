@@ -9,7 +9,7 @@ import android.media.MediaPlayer
 
 class MainActivity : AppCompatActivity() {
 
-    private var mediaPlayer: MediaPlayer?=null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,13 +52,5 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun PlayMusic(songResId: Int) {
-        mediaPlayer?.release()
-        mediaPlayer = MediaPlayer.create(this, songResId)
-        mediaPlayer?.start()
-    }
-    override fun onDestroy() {
-        super.onDestroy()
-        mediaPlayer?.release()
-    }
+
 }

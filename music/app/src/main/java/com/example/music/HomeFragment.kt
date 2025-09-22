@@ -28,11 +28,6 @@ class HomeFragment : Fragment() {
             R.id.song_9 to R.raw.song9,
             R.id.song_10 to R.raw.song10
         )
-        for ((imageId, songRes) in songs) {
-            view.findViewById<ImageView>(imageId)?.setOnClickListener {
-                (activity as? MainActivity)?.PlayMusic(songRes)
-            }
-        }
         return view
     }
 }
