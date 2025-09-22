@@ -1,202 +1,94 @@
-[
-  {
-    "id": "jp001",
-    "title": "Lemon",
-    "artist": "米津玄師 (Kenshi Yonezu)",
-    "duration": 260,
-    "genre": "Pop",
-    "release_year": 2018,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=SX_ViT4Ra7k"
-  },
-  {
-    "id": "jp002",
-    "title": "Pretender",
-    "artist": "Official髭男dism",
-    "duration": 270,
-    "genre": "Pop Rock",
-    "release_year": 2019,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=TQ8WlA2GXbk"
-  },
-  {
-    "id": "jp003",
-    "title": "Paprika",
-    "artist": "Foorin",
-    "duration": 230,
-    "genre": "Children",
-    "release_year": 2018,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=T0valuAksuo"
-  },
-  {
-    "id": "jp004",
-    "title": "Gurenge",
-    "artist": "LiSA",
-    "duration": 215,
-    "genre": "Anime Rock",
-    "release_year": 2019,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=pHjP1AMuBzQ"
-  },
-  {
-    "id": "jp005",
-    "title": "Blue Bird",
-    "artist": "Ikimono Gakari",
-    "duration": 220,
-    "genre": "Anime Pop",
-    "release_year": 2008,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=U3x4JxYxJXg"
-  },
-  {
-    "id": "jp006",
-    "title": "Heavy Rotation",
-    "artist": "AKB48",
-    "duration": 240,
-    "genre": "Idol Pop",
-    "release_year": 2010,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=lkHlnWFnA0c"
-  },
-  {
-    "id": "jp007",
-    "title": "TT -Japanese ver.-",
-    "artist": "TWICE",
-    "duration": 210,
-    "genre": "K-Pop/J-Pop",
-    "release_year": 2017,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=ZI9T5z0FBTY"
-  },
-  {
-    "id": "jp008",
-    "title": "Sign",
-    "artist": "FLOW",
-    "duration": 230,
-    "genre": "Anime Rock",
-    "release_year": 2010,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=3zqvJz-3UjY"
-  },
-  {
-    "id": "jp009",
-    "title": "Zankoku na Tenshi no Thesis",
-    "artist": "Yoko Takahashi",
-    "duration": 240,
-    "genre": "Anime",
-    "release_year": 1995,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=0kFhzrYI2bI"
-  },
-  {
-    "id": "jp010",
-    "title": "Uchiage Hanabi",
-    "artist": "DAOKO × Kenshi Yonezu",
-    "duration": 250,
-    "genre": "Pop",
-    "release_year": 2017,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=-tKVN2mAKRI"
-  },
-  {
-    "id": "jp011",
-    "title": "Koi",
-    "artist": "Gen Hoshino",
-    "duration": 210,
-    "genre": "Pop",
-    "release_year": 2016,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=jhOVibLEDhA"
-  },
-  {
-    "id": "jp012",
-    "title": "Shinunoga E-Wa",
-    "artist": "Fujii Kaze",
-    "duration": 200,
-    "genre": "Indie Pop",
-    "release_year": 2020,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=I0m2YQZ0PjM"
-  },
-  {
-    "id": "jp013",
-    "title": "Yoru ni Kakeru",
-    "artist": "YOASOBI",
-    "duration": 240,
-    "genre": "J-Pop",
-    "release_year": 2020,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=x8VYWazR5mE"
-  },
-  {
-    "id": "jp014",
-    "title": "Kaikai Kitan",
-    "artist": "Eve",
-    "duration": 230,
-    "genre": "Anime Rock",
-    "release_year": 2020,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=1tk1pqwrOys"
-  },
-  {
-    "id": "jp015",
-    "title": "Sparkle",
-    "artist": "RADWIMPS",
-    "duration": 270,
-    "genre": "Movie OST",
-    "release_year": 2016,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=3h1JZz0fJ2Y"
-  },
-  {
-    "id": "jp016",
-    "title": "Nandemonaiya",
-    "artist": "RADWIMPS",
-    "duration": 260,
-    "genre": "Movie OST",
-    "release_year": 2016,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=9lVPAWLWtWc"
-  },
-  {
-    "id": "jp017",
-    "title": "Homura",
-    "artist": "LiSA",
-    "duration": 270,
-    "genre": "Anime Ballad",
-    "release_year": 2020,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=4H0JDomv8ac"
-  },
-  {
-    "id": "jp018",
-    "title": "Ichizu",
-    "artist": "King Gnu",
-    "duration": 250,
-    "genre": "Alternative Rock",
-    "release_year": 2021,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=Kx1QZbZ2FzA"
-  },
-  {
-    "id": "jp019",
-    "title": "KICK BACK",
-    "artist": "米津玄師 (Kenshi Yonezu)",
-    "duration": 230,
-    "genre": "Anime Rock",
-    "release_year": 2022,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=1tk1pqwrOys"
-  },
-  {
-    "id": "jp020",
-    "title": "Tabun",
-    "artist": "YOASOBI",
-    "duration": 220,
-    "genre": "J-Pop",
-    "release_year": 2020,
-    "platform": "YouTube",
-    "stream_url": "https://www.youtube.com/watch?v=8zZzv3X6pWg"
-  }
-]
+{
+  "tracks": [
+    {
+      "id": "abc123",
+      "title": "Sunset Drive",
+      "artist": "Lofi Beats",
+      "album": "Chill Vibes",
+      "duration": 185,
+      "thumbnail": "https://example.com/thumb1.jpg",
+      "streamUrl": "https://example.com/stream1.mp3"
+    },
+    {
+      "id": "def456",
+      "title": "Ocean Breeze",
+      "artist": "Wave Sounds",
+      "album": "Sea Escape",
+      "duration": 210,
+      "thumbnail": "https://example.com/thumb2.jpg",
+      "streamUrl": "https://example.com/stream2.mp3"
+    },
+    {
+      "id": "ghi789",
+      "title": "Night City Lights",
+      "artist": "Synth Dreams",
+      "album": "Neon Nights",
+      "duration": 198,
+      "thumbnail": "https://example.com/thumb3.jpg",
+      "streamUrl": "https://example.com/stream3.mp3"
+    },
+    {
+      "id": "jkl012",
+      "title": "Morning Coffee",
+      "artist": "Acoustic Chill",
+      "album": "Cafe Mornings",
+      "duration": 172,
+      "thumbnail": "https://example.com/thumb4.jpg",
+      "streamUrl": "https://example.com/stream4.mp3"
+    },
+    {
+      "id": "mno345",
+      "title": "Rainy Window",
+      "artist": "Piano Dreams",
+      "album": "Rainy Days",
+      "duration": 240,
+      "thumbnail": "https://example.com/thumb5.jpg",
+      "streamUrl": "https://example.com/stream5.mp3"
+    },
+    {
+      "id": "pqr678",
+      "title": "Starry Night",
+      "artist": "Ambient Sky",
+      "album": "Cosmic Dreams",
+      "duration": 205,
+      "thumbnail": "https://example.com/thumb6.jpg",
+      "streamUrl": "https://example.com/stream6.mp3"
+    },
+    {
+      "id": "stu901",
+      "title": "Forest Walk",
+      "artist": "Nature Sounds",
+      "album": "Green Escape",
+      "duration": 193,
+      "thumbnail": "https://example.com/thumb7.jpg",
+      "streamUrl": "https://example.com/stream7.mp3"
+    },
+    {
+      "id": "vwx234",
+      "title": "Golden Hour",
+      "artist": "Indie Waves",
+      "album": "Sunset Stories",
+      "duration": 188,
+      "thumbnail": "https://example.com/thumb8.jpg",
+      "streamUrl": "https://example.com/stream8.mp3"
+    },
+    {
+      "id": "yz1234",
+      "title": "Midnight Ride",
+      "artist": "Synth Rider",
+      "album": "Night Drive",
+      "duration": 215,
+      "thumbnail": "https://example.com/thumb9.jpg",
+      "streamUrl": "https://example.com/stream9.mp3"
+    },
+    {
+      "id": "za5678",
+      "title": "Dreamscape",
+      "artist": "Chillhop Dreams",
+      "album": "Sleepy Beats",
+      "duration": 202,
+      "thumbnail": "https://example.com/thumb10.jpg",
+      "streamUrl": "https://example.com/stream10.mp3"
+    }
+  ]
+}
