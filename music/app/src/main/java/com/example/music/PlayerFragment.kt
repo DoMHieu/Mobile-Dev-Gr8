@@ -7,6 +7,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -20,6 +21,7 @@ class PlayerFragment : Fragment() {
     private lateinit var textCurrentTime: TextView
     private lateinit var textTotalTime: TextView
     private lateinit var playPauseButton: ImageView
+    private lateinit var repeatButton: ImageView
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -48,6 +50,7 @@ class PlayerFragment : Fragment() {
         textCurrentTime = view.findViewById(R.id.songCurrentProgress)
         textTotalTime = view.findViewById(R.id.songTotalTime)
         playPauseButton = view.findViewById(R.id.playPauseButton)
+        repeatButton = view.findViewById(R.id.repeatButton)
         mediaPlayer = MediaPlayer.create(requireContext(), R.raw.monitoring)
         slider.valueFrom = 0f //f: float, because slider using float type instead of milisecond
         slider.valueTo = mediaPlayer.duration.toFloat()
@@ -58,8 +61,20 @@ class PlayerFragment : Fragment() {
             if (!mediaPlayer.isPlaying) {
                 mediaPlayer.start()
                 handler.post(updateSlider)
+                playPauseButton.setImageResource(R.drawable.pause_24px)
             } else {
                 mediaPlayer.pause()
+                playPauseButton.setImageResource(R.drawable.play)
+            }
+        }
+
+        repeatButton.setOnClickListener {
+            if(!mediaPlayer.isLooping) {
+                mediaPlayer.isLooping = true
+                repeatButton.setImageResource(R.drawable.repeat_one_24px)
+            } else {
+                mediaPlayer.isLooping = false
+                repeatButton.setImageResource(R.drawable.repeat)
             }
         }
 
