@@ -127,8 +127,10 @@
                 android:id="@+id/playPauseButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/pause_24px"
-                tools:tint="@color/black" />
+                app:srcCompat="@drawable/play"
+                android:backgroundTint="#CCCCFF"
+                tools:tint="@color/black"
+                />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/nextButton"
