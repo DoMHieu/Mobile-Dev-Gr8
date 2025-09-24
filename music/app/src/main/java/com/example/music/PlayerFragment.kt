@@ -1,6 +1,7 @@
 package com.example.music
 
 import android.media.MediaPlayer
+import android.app.Service
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -35,7 +36,7 @@ class PlayerFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
+    override fun onCreateView(  //To create view
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
@@ -43,7 +44,7 @@ class PlayerFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_player, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) { //for function
         super.onViewCreated(view, savedInstanceState)
 
         slider = view.findViewById(R.id.progressSlider)
@@ -56,6 +57,7 @@ class PlayerFragment : Fragment() {
         slider.valueTo = mediaPlayer.duration.toFloat()
         slider.stepSize = 1f
         textTotalTime.text = formatTime(mediaPlayer.duration)
+
 
         playPauseButton.setOnClickListener {
             if (!mediaPlayer.isPlaying) {
