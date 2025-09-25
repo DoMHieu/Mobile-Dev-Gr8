@@ -29,7 +29,8 @@ class PlayerFragment : Fragment() {
     private val updateSlider: Runnable = object : Runnable {
         override fun run() {
             if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
-                slider.value = mediaPlayer.currentPosition.toFloat()
+                val pos = mediaPlayer.currentPosition.toFloat()
+                slider.value = pos.coerceIn(slider.valueFrom, slider.valueTo)
                 textCurrentTime.text = formatTime(mediaPlayer.currentPosition)
                 handler.postDelayed(this, 1000)
             }
@@ -57,6 +58,17 @@ class PlayerFragment : Fragment() {
         slider.valueTo = mediaPlayer.duration.toFloat()
         slider.stepSize = 1f
         textTotalTime.text = formatTime(mediaPlayer.duration)
+
+        mediaPlayer.setOnCompletionListener {
+            mediaPlayer.release()
+            mediaPlayer = MediaPlayer.create(requireContext(), R.raw.monitoring)
+            slider.value = 0f
+            slider.valueTo = mediaPlayer.duration.toFloat()
+            textCurrentTime.text = "0:00"
+            textTotalTime.text = formatTime(mediaPlayer.duration)
+            playPauseButton.setImageResource(R.drawable.play)
+            handler.removeCallbacks(updateSlider)
+        }
 
 
         playPauseButton.setOnClickListener {
@@ -86,6 +98,8 @@ class PlayerFragment : Fragment() {
                 textCurrentTime.text = formatTime(value.toInt())
             }
         }
+
+
     }
 
     private fun formatTime(milliseconds: Int): String {
