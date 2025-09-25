@@ -1,14 +1,12 @@
 package com.example.music
 
 import android.media.MediaPlayer
-import android.app.Service
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -37,39 +35,40 @@ class PlayerFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(  //To create view
+
+    private fun initMediaPlayer() { //Create media Function
+        mediaPlayer = MediaPlayer.create(requireContext(), R.raw.monitoring)
+        slider.valueFrom = 0f
+        slider.valueTo = mediaPlayer.duration.toFloat()
+        slider.value = 0f
+        textTotalTime.text = formatTime(mediaPlayer.duration)
+        textCurrentTime.text = "0:00"
+        // Reset slider and Music
+        mediaPlayer.setOnCompletionListener {
+            handler.removeCallbacks(updateSlider)
+            slider.value = 0f
+            textCurrentTime.text = "0:00"
+            playPauseButton.setImageResource(R.drawable.play)
+            mediaPlayer.seekTo(0)
+        }
+    }
+
+    override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         return inflater.inflate(R.layout.fragment_player, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) { //for function
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         slider = view.findViewById(R.id.progressSlider)
         textCurrentTime = view.findViewById(R.id.songCurrentProgress)
         textTotalTime = view.findViewById(R.id.songTotalTime)
         playPauseButton = view.findViewById(R.id.playPauseButton)
         repeatButton = view.findViewById(R.id.repeatButton)
-        mediaPlayer = MediaPlayer.create(requireContext(), R.raw.monitoring)
-        slider.valueFrom = 0f //f: float, because slider using float type instead of milisecond
-        slider.valueTo = mediaPlayer.duration.toFloat()
-        slider.stepSize = 1f
-        textTotalTime.text = formatTime(mediaPlayer.duration)
 
-        mediaPlayer.setOnCompletionListener {
-            mediaPlayer.release()
-            mediaPlayer = MediaPlayer.create(requireContext(), R.raw.monitoring)
-            slider.value = 0f
-            slider.valueTo = mediaPlayer.duration.toFloat()
-            textCurrentTime.text = "0:00"
-            textTotalTime.text = formatTime(mediaPlayer.duration)
-            playPauseButton.setImageResource(R.drawable.play)
-            handler.removeCallbacks(updateSlider)
-        }
-
+        initMediaPlayer()
 
         playPauseButton.setOnClickListener {
             if (!mediaPlayer.isPlaying) {
@@ -83,7 +82,7 @@ class PlayerFragment : Fragment() {
         }
 
         repeatButton.setOnClickListener {
-            if(!mediaPlayer.isLooping) {
+            if (!mediaPlayer.isLooping) {
                 mediaPlayer.isLooping = true
                 repeatButton.setImageResource(R.drawable.repeat_one_24px)
             } else {
@@ -92,14 +91,12 @@ class PlayerFragment : Fragment() {
             }
         }
 
-        slider.addOnChangeListener { _, value, fromUser -> //to control the slider
+        slider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
                 mediaPlayer.seekTo(value.toInt())
                 textCurrentTime.text = formatTime(value.toInt())
             }
         }
-
-
     }
 
     private fun formatTime(milliseconds: Int): String {
@@ -108,7 +105,7 @@ class PlayerFragment : Fragment() {
         return String.format("%d:%02d", minutes, seconds)
     }
 
-    override fun onDestroyView() {
+    override fun onDestroyView() { //destroy
         super.onDestroyView()
         handler.removeCallbacks(updateSlider)
         if (::mediaPlayer.isInitialized) {
