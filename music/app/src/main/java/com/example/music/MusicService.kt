@@ -1,0 +1,166 @@
+package com.example.music
+
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
+import android.content.Intent
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import androidx.core.app.NotificationCompat
+import androidx.core.net.toUri
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
+
+class MusicService : Service() {
+
+    private lateinit var exoPlayer: ExoPlayer
+    private val CHANNEL_ID = "music_channel_id"
+    private val NOTIFICATION_ID = 1
+    private val handler = Handler(Looper.getMainLooper())
+
+    // Store info about the current song
+    private var currentTitle: String = ""
+    private var currentArtist: String = ""
+    private var currentCover: String = ""
+
+    // Runnable to update every second (Handler)
+    private val updateRunnable = object : Runnable {
+        override fun run() {
+            if (::exoPlayer.isInitialized && exoPlayer.playbackState == ExoPlayer.STATE_READY) {
+                sendProgressBroadcast()
+            }
+            handler.postDelayed(this, 100) //I can put it to 1000 for less CPU use, but it'll make everything 1s slower
+        }
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannel()
+
+        exoPlayer = ExoPlayer.Builder(this).build()
+        exoPlayer.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(state: Int) {
+                if (state == Player.STATE_ENDED) {
+                    exoPlayer.seekTo(0)
+                    exoPlayer.pause()
+                    updateNotification("Playback finished")
+                    sendProgressBroadcast()
+                }
+            }
+        })
+
+        // Start foreground service with a default notification (intend to add it if enough time)
+        startForeground(NOTIFICATION_ID, buildNotification("Waiting to play..."))
+        handler.post(updateRunnable)
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.getStringExtra("ACTION")) {
+            "TOGGLE_PLAY" -> {
+                if (exoPlayer.isPlaying) {
+                    exoPlayer.pause()
+                    updateNotification("Paused")
+                } else {
+                    exoPlayer.play()
+                    updateNotification("Playing")
+                }
+                sendProgressBroadcast()
+            }
+
+            "SEEK_TO" -> {
+                val position = intent.getLongExtra("SEEK_TO", 0L)
+                exoPlayer.seekTo(position)
+                sendProgressBroadcast()
+            }
+
+            "TOGGLE_REPEAT" -> {
+                exoPlayer.repeatMode =
+                    if (exoPlayer.repeatMode == ExoPlayer.REPEAT_MODE_ONE)
+                        ExoPlayer.REPEAT_MODE_OFF
+                    else
+                        ExoPlayer.REPEAT_MODE_ONE
+                sendProgressBroadcast()
+            }
+
+            "PLAY_URL" -> {
+                val url = intent.getStringExtra("URL") ?: return START_NOT_STICKY
+                currentTitle = intent.getStringExtra("TITLE") ?: ""
+                currentArtist = intent.getStringExtra("ARTIST") ?: ""
+                currentCover = intent.getStringExtra("COVER") ?: ""
+
+                exoPlayer.setMediaItem(MediaItem.fromUri(url.toUri()))
+                exoPlayer.prepare()
+                exoPlayer.play()
+                updateNotification("Playing: $currentTitle")
+                sendProgressBroadcast()
+            }
+        }
+        return START_STICKY
+    }
+
+    override fun onDestroy() {
+        handler.removeCallbacks(updateRunnable)
+        if (::exoPlayer.isInitialized) {
+            exoPlayer.release()
+        }
+        super.onDestroy()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    // --- Helper methods ---
+    // Create a notification channel for foreground playback
+    private fun createNotificationChannel() {
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "Music Channel",
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            description = "Channel for music playback"
+        }
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.createNotificationChannel(channel)
+    }
+
+    // Build a notification with custom text
+    private fun buildNotification(contentText: String): Notification {
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("Music Player")
+            .setContentText(contentText)
+            .setSmallIcon(R.drawable.music_note_24px)
+            .setOngoing(true)
+            .build()
+    }
+
+    // Update existing notification
+    private fun updateNotification(contentText: String) {
+        val notification = buildNotification(contentText)
+        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        manager.notify(NOTIFICATION_ID, notification)
+    }
+
+    // Broadcast playback progress and state to PlayerFragment
+    private fun sendProgressBroadcast() {
+        if (::exoPlayer.isInitialized) {
+            val duration = if (exoPlayer.duration == C.TIME_UNSET) 0L else exoPlayer.duration
+            val position = exoPlayer.currentPosition
+            val isPlaying = exoPlayer.isPlaying
+            val isRepeating = exoPlayer.repeatMode == ExoPlayer.REPEAT_MODE_ONE
+
+            val intent = Intent("MUSIC_PROGRESS_UPDATE").apply {
+                putExtra("position", position)
+                putExtra("duration", duration)
+                putExtra("isPlaying", isPlaying)
+                putExtra("isRepeating", isRepeating)
+                putExtra("title", currentTitle)
+                putExtra("artist", currentArtist)
+                putExtra("cover", currentCover)
+            }
+            sendBroadcast(intent)
+        }
+    }
+}
