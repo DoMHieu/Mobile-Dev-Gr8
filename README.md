@@ -11,3 +11,5 @@ Update tiến trình dự án ngày 27/9/2025:<br>
 Đã xong search function, API, và player (background run)<br>
 Giờ còn thiếu phần thiết kế cứng và màn hình home chưa biết nên làm gì<br>
 Thế nên nhóm fontend cố mà hoàn thiện đi :Đ <br>
+
+Còn nữa, PlayerFragment đang có 3 nút vô dụng là Suffle, Next Song và Previous, thế nên hoàn thiện hộ cái :Đ<br>
