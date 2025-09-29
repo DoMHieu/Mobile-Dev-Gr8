@@ -38,11 +38,7 @@ class MusicService : Service() {
                 putExtra("ARTIST", artist)
                 putExtra("COVER", cover)
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
-            } else {
-                context.startService(intent)
-            }
+            context.startForegroundService(intent)
         }
 
         fun togglePlay(context: Context) {
@@ -147,7 +143,7 @@ class MusicService : Service() {
                 prev?.let { playSong(it) }
             }
         }
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     override fun onDestroy() {
@@ -187,17 +183,15 @@ class MusicService : Service() {
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "Music Channel",
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = "Channel for music playback"
-            }
-            val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "Music Channel",
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            description = "Channel for music playback"
         }
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.createNotificationChannel(channel)
     }
 
     private fun buildNotification(contentText: String): Notification {
@@ -234,4 +228,9 @@ class MusicService : Service() {
             sendBroadcast(intent)
         }
     }
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        stopSelf()
+    }
+
 }
