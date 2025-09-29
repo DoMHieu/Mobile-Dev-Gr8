@@ -1,9 +1,7 @@
 package com.example.music
 
 import android.app.Application
-import android.content.Intent
 import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 
 //For service foreground

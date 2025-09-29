@@ -39,11 +39,27 @@ object MusicQueueManager {
     }
 
     fun remove(song: Song) {
-        queue.remove(song)
-        if(song == currentSong) {
-            currentSong = null
-            currentIndex = -1
+        val removedIndex = queue.indexOf(song)
+        if (removedIndex == -1) return
+
+        queue.removeAt(removedIndex)
+
+        if (song == currentSong) {
+            if (queue.isNotEmpty()) {
+                // Ưu tiên bài đứng ở cùng vị trí (chính là bài "tiếp theo" sau khi remove)
+                currentIndex = minOf(removedIndex, queue.size - 1)
+                currentSong = queue[currentIndex]
+            } else {
+                currentSong = null
+                currentIndex = -1
+            }
+        } else {
+            // Nếu xoá bài đứng trước currentIndex, dịch trái index hiện tại
+            if (removedIndex < currentIndex) {
+                currentIndex--
+            }
         }
     }
+
 }
 

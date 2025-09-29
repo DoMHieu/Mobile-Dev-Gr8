@@ -22,6 +22,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.slider.Slider
 import java.util.concurrent.TimeUnit
+import androidx.core.view.isGone
 
 class PlayerFragment : Fragment() {
 
@@ -37,6 +38,7 @@ class PlayerFragment : Fragment() {
 
     // Nhận broadcast từ MusicService
     private val musicReceiver = object : BroadcastReceiver() {
+        @SuppressLint("NotifyDataSetChanged")
         override fun onReceive(context: Context?, intent: Intent?) {
             val position = intent?.getLongExtra("position", 0L) ?: 0L
             val duration = intent?.getLongExtra("duration", 0L) ?: 0L
@@ -53,7 +55,7 @@ class PlayerFragment : Fragment() {
             toolbar?.subtitle = artist
 
             // Ảnh bìa
-            if (!coverUrl.isNullOrEmpty()) {
+            if (coverUrl.isNotEmpty()) {
                 Glide.with(requireContext())
                     .load(coverUrl)
                     .placeholder(R.drawable.image_24px)
@@ -179,18 +181,35 @@ class PlayerFragment : Fragment() {
                 ): Boolean = false
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    val position = viewHolder.adapterPosition
+                    val position = viewHolder.bindingAdapterPosition
                     val song = MusicQueueManager.getQueue()[position]
+                    val isCurrent = (song == MusicQueueManager.getCurrent())
                     MusicQueueManager.remove(song)
                     queueAdapter.notifyItemRemoved(position)
+
+                    if (isCurrent) {//change song if delete currentsong
+                        val next = MusicQueueManager.getCurrent()
+                        if (next != null) {
+                            MusicService.play(
+                                next.url,
+                                requireContext(),
+                                title = next.title,
+                                artist = next.artist,
+                                cover = next.cover
+                            )
+                        } else { //else, continue to run, this code only work to update queue
+                            MusicService.next(requireContext())
+                        }
+                    }
                 }
+
             })
         itemTouchHelper.attachToRecyclerView(rvQueue)
 
-        // Nút toggle queue
+        //Queue Button
         val btnQueue = view.findViewById<androidx.appcompat.widget.AppCompatImageButton>(R.id.playlist_play)
         btnQueue.setOnClickListener {
-            if (rvQueue.visibility == View.GONE) {
+            if (rvQueue.isGone) {
                 rvQueue.visibility = View.VISIBLE
                 coverImage.visibility = View.GONE
                 queueAdapter.notifyDataSetChanged()

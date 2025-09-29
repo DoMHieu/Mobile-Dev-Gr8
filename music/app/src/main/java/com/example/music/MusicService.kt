@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -24,7 +23,7 @@ class MusicService : Service() {
     private val NOTIFICATION_ID = 1
     private val handler = Handler(Looper.getMainLooper())
 
-    // Thông tin bài hát hiện tại
+    //Current song info
     private var currentTitle: String = ""
     private var currentArtist: String = ""
     private var currentCover: String = ""
@@ -41,27 +40,8 @@ class MusicService : Service() {
             context.startForegroundService(intent)
         }
 
-        fun togglePlay(context: Context) {
-            context.startService(Intent(context, MusicService::class.java).apply { action = "TOGGLE_PLAY" })
-        }
-
-        fun seekTo(context: Context, position: Long) {
-            context.startService(Intent(context, MusicService::class.java).apply {
-                action = "SEEK_TO"
-                putExtra("SEEK_TO", position)
-            })
-        }
-
-        fun toggleRepeat(context: Context) {
-            context.startService(Intent(context, MusicService::class.java).apply { action = "TOGGLE_REPEAT" })
-        }
-
         fun next(context: Context) {
             context.startService(Intent(context, MusicService::class.java).apply { action = "NEXT" })
-        }
-
-        fun previous(context: Context) {
-            context.startService(Intent(context, MusicService::class.java).apply { action = "PREVIOUS" })
         }
     }
 
@@ -156,6 +136,11 @@ class MusicService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        stopSelf()
+    }
+
     // --- Helper methods ---
     private fun handleSongEnded() {
         val next = MusicQueueManager.playNext()
@@ -228,9 +213,4 @@ class MusicService : Service() {
             sendBroadcast(intent)
         }
     }
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        super.onTaskRemoved(rootIntent)
-        stopSelf()
-    }
-
 }
