@@ -12,38 +12,41 @@
         android:orientation="vertical"
         android:paddingBottom="48dp">
 
+        <!-- Toolbar -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/Toolbar"
             style="@style/Widget.Material3.Toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
-            app:contentInsetLeft="0dp"
-            app:contentInsetStart="0dp"
-            app:contentInsetStartWithNavigation="0dp"
-            app:navigationIcon="@drawable/back_button"
-            app:titleMargin="0dp"
-            app:titleMarginStart="0dp"
-            tools:subtitle="@tools:sample/full_names"
-            tools:title="@tools:sample/full_names" />
+            app:navigationIcon="@drawable/music_note_24px"
+            tools:title="Tên bài hát"
+            tools:subtitle="Tên nghệ sĩ" />
 
+        <!-- Cover + Queue (thay thế nhau) -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/Cover"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
+            <!-- Ảnh bìa -->
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:scaleType="centerCrop"
                 tools:src="@tools:sample/avatars" />
 
+            <!-- Queue (ẩn mặc định) -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvQueue"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:background="@android:color/darker_gray"
+                android:padding="8dp"/>
         </FrameLayout>
+
+        <!-- Progress bar + thời gian -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ProgressLayout"
             android:layout_width="match_parent"
@@ -55,11 +58,10 @@
                 android:id="@+id/songCurrentProgress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:minWidth="40dp"
+                android:gravity="center"
                 android:singleLine="true"
-                android:textColor="?android:attr/textColorSecondary"
-                tools:text="@tools:sample/date/hhmmss"
+                tools:text="0:00"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/progressSlider"
                 app:layout_constraintBottom_toBottomOf="@id/progressSlider"
@@ -80,29 +82,26 @@
                 android:id="@+id/songTotalTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:minWidth="40dp"
+                android:gravity="center"
                 android:singleLine="true"
-                android:textColor="?android:attr/textColorSecondary"
-                tools:text="@tools:sample/date/hhmmss"
+                tools:text="3:45"
+                app:layout_constraintStart_toEndOf="@id/progressSlider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/progressSlider"
-                app:layout_constraintBottom_toBottomOf="@id/progressSlider"
-                app:layout_constraintStart_toEndOf="@id/progressSlider"/>
-
+                app:layout_constraintBottom_toBottomOf="@id/progressSlider"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- Các nút điều khiển -->
         <GridLayout
             android:id="@+id/buttonGrid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:alignmentMode="alignMargins"
             android:columnCount="5"
+            android:useDefaultMargins="true"
             android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:rowCount="1"
-            android:useDefaultMargins="true">
+            android:paddingBottom="8dp">
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/repeatButton"
@@ -110,33 +109,22 @@
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="16dp"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/repeat"
-                tools:ignore="MissingPrefix"
-                tools:tint="@color/black" />
+                app:srcCompat="@drawable/repeat" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/previousButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_row="0"
-                android:layout_column="1"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="16dp"
-                android:scaleType="fitCenter"
-
-                app:srcCompat="@drawable/skip_previous_24px"
-                tools:ignore="MissingPrefix"
-                tools:tint="@color/black" />
+                app:srcCompat="@drawable/skip_previous_24px" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/playPauseButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/play"
-                android:backgroundTint="#CCCCFF"
-                tools:tint="@color/black"
-                />
+                android:backgroundTint="#CCCCFF" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/nextButton"
@@ -144,24 +132,16 @@
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="16dp"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/skip_next_24px"
-                tools:ignore="MissingPrefix"
-                tools:tint="@color/black" />
+                app:srcCompat="@drawable/skip_next_24px" />
 
+            <!-- Nút toggle queue -->
             <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/shuffleButton"
+                android:id="@+id/playlist_play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="16dp"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/shuffle_24px"
-                tools:ignore="MissingPrefix"
-                tools:tint="@color/black" />
-
+                app:srcCompat="@drawable/playlist_play" />
         </GridLayout>
-
     </LinearLayout>
-
 </FrameLayout>

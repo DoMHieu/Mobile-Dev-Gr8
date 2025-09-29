@@ -1,8 +1,6 @@
 package com.example.music
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +18,7 @@ class SearchFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: SongAdapter
     private val songs = mutableListOf<Song>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -29,20 +28,41 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         searchInput = view.findViewById(R.id.searchInput)
         recyclerView = view.findViewById(R.id.recyclerView)
+
         adapter = SongAdapter(songs) { song ->
-            playSong(song)
+            //Add in queue
+            MusicQueueManager.add(song)
+
+            //Play the song if the queue empty
+            if (MusicQueueManager.getQueue().size == 1) {
+                MusicQueueManager.setCurrentSong(song)
+                MusicService.play(
+                    song.url,
+                    requireContext(),
+                    title = song.title,
+                    artist = song.artist,
+                    cover = song.cover
+                )
+            }
         }
+
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
-        //Require enter to search
-        searchInput.setOnEditorActionListener { _, _, _ ->
-            val keyword = searchInput.text.toString()
-            if (keyword.isNotEmpty()) {
-                searchSongs(keyword)
+
+        searchInput.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val keyword = s.toString().trim()
+                if (keyword.isNotEmpty()) {
+                    searchSongs(keyword)
+                }
             }
-            true
-        }
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+
     }
+
     private fun searchSongs(keyword: String) {
         RetrofitClient.api.searchTrack(keyword).enqueue(object : Callback<DeezerResponse> {
             @SuppressLint("NotifyDataSetChanged")
@@ -56,7 +76,7 @@ class SearchFragment : Fragment() {
                     songs.addAll(tracks.map {
                         Song(
                             title = it.title,
-                            url = it.preview,
+                            url = it.preview, // dùng preview để phát nhạc
                             artist = it.artist.name,
                             cover = it.album.cover
                         )
@@ -64,24 +84,10 @@ class SearchFragment : Fragment() {
                     adapter.notifyDataSetChanged()
                 }
             }
+
             override fun onFailure(call: Call<DeezerResponse>, t: Throwable) {
                 t.printStackTrace()
             }
         })
     }
-    private fun playSong(song: Song) {
-        val intent = Intent(requireContext(), MusicService::class.java).apply {
-            putExtra("ACTION", "PLAY_URL")
-            putExtra("URL", song.url)
-            putExtra("TITLE", song.title)
-            putExtra("ARTIST", song.artist)
-            putExtra("COVER", song.cover)
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            requireContext().startForegroundService(intent)
-        } else {
-            requireContext().startService(intent)
-        }
-    }
-
 }

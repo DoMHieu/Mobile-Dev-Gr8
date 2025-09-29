@@ -6,6 +6,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 
+//For service foreground
 class MyApp : Application(), DefaultLifecycleObserver {
     override fun onCreate() {
         super<Application>.onCreate()

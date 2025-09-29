@@ -4,7 +4,9 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -22,18 +24,58 @@ class MusicService : Service() {
     private val NOTIFICATION_ID = 1
     private val handler = Handler(Looper.getMainLooper())
 
-    // Store info about the current song
+    // Thông tin bài hát hiện tại
     private var currentTitle: String = ""
     private var currentArtist: String = ""
     private var currentCover: String = ""
 
-    // Runnable to update every second (Handler)
+    companion object {
+        fun play(url: String, context: Context, title: String = "", artist: String = "", cover: String = "") {
+            val intent = Intent(context, MusicService::class.java).apply {
+                action = "PLAY_URL"
+                putExtra("URL", url)
+                putExtra("TITLE", title)
+                putExtra("ARTIST", artist)
+                putExtra("COVER", cover)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent)
+            } else {
+                context.startService(intent)
+            }
+        }
+
+        fun togglePlay(context: Context) {
+            context.startService(Intent(context, MusicService::class.java).apply { action = "TOGGLE_PLAY" })
+        }
+
+        fun seekTo(context: Context, position: Long) {
+            context.startService(Intent(context, MusicService::class.java).apply {
+                action = "SEEK_TO"
+                putExtra("SEEK_TO", position)
+            })
+        }
+
+        fun toggleRepeat(context: Context) {
+            context.startService(Intent(context, MusicService::class.java).apply { action = "TOGGLE_REPEAT" })
+        }
+
+        fun next(context: Context) {
+            context.startService(Intent(context, MusicService::class.java).apply { action = "NEXT" })
+        }
+
+        fun previous(context: Context) {
+            context.startService(Intent(context, MusicService::class.java).apply { action = "PREVIOUS" })
+        }
+    }
+
+    // Runnable update progress
     private val updateRunnable = object : Runnable {
         override fun run() {
-            if (::exoPlayer.isInitialized && exoPlayer.playbackState == ExoPlayer.STATE_READY) {
+            if (::exoPlayer.isInitialized && exoPlayer.isPlaying) {
                 sendProgressBroadcast()
             }
-            handler.postDelayed(this, 100) //I can put it to 1000 for less CPU use, but it'll make everything 1s slower
+            handler.postDelayed(this, 1000)
         }
     }
 
@@ -45,21 +87,17 @@ class MusicService : Service() {
         exoPlayer.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
                 if (state == Player.STATE_ENDED) {
-                    exoPlayer.seekTo(0)
-                    exoPlayer.pause()
-                    updateNotification("Playback finished")
-                    sendProgressBroadcast()
+                    handleSongEnded()
                 }
             }
         })
 
-        // Start foreground service with a default notification (intend to add it if enough time)
         startForeground(NOTIFICATION_ID, buildNotification("Waiting to play..."))
         handler.post(updateRunnable)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        when (intent?.getStringExtra("ACTION")) {
+        when (intent?.action) {
             "TOGGLE_PLAY" -> {
                 if (exoPlayer.isPlaying) {
                     exoPlayer.pause()
@@ -98,6 +136,16 @@ class MusicService : Service() {
                 updateNotification("Playing: $currentTitle")
                 sendProgressBroadcast()
             }
+
+            "NEXT" -> {
+                val next = MusicQueueManager.playNext()
+                next?.let { playSong(it) }
+            }
+
+            "PREVIOUS" -> {
+                val prev = MusicQueueManager.playPrevious()
+                prev?.let { playSong(it) }
+            }
         }
         return START_STICKY
     }
@@ -113,20 +161,45 @@ class MusicService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     // --- Helper methods ---
-    // Create a notification channel for foreground playback
-    private fun createNotificationChannel() {
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            "Music Channel",
-            NotificationManager.IMPORTANCE_LOW
-        ).apply {
-            description = "Channel for music playback"
+    private fun handleSongEnded() {
+        val next = MusicQueueManager.playNext()
+        if (next != null) {
+            playSong(next)
+        } else {
+            exoPlayer.seekTo(0)
+            exoPlayer.pause()
+            updateNotification("Queue ended")
+            sendProgressBroadcast()
         }
-        val manager = getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(channel)
     }
 
-    // Build a notification with custom text
+    private fun playSong(song: Song) {
+        MusicQueueManager.setCurrentSong(song)
+        currentTitle = song.title
+        currentArtist = song.artist
+        currentCover = song.cover
+
+        exoPlayer.setMediaItem(MediaItem.fromUri(song.url.toUri()))
+        exoPlayer.prepare()
+        exoPlayer.play()
+        updateNotification("Playing: ${song.title}")
+        sendProgressBroadcast()
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Music Channel",
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Channel for music playback"
+            }
+            val manager = getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(channel)
+        }
+    }
+
     private fun buildNotification(contentText: String): Notification {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Music Player")
@@ -136,14 +209,12 @@ class MusicService : Service() {
             .build()
     }
 
-    // Update existing notification
     private fun updateNotification(contentText: String) {
         val notification = buildNotification(contentText)
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(NOTIFICATION_ID, notification)
     }
 
-    // Broadcast playback progress and state to PlayerFragment
     private fun sendProgressBroadcast() {
         if (::exoPlayer.isInitialized) {
             val duration = if (exoPlayer.duration == C.TIME_UNSET) 0L else exoPlayer.duration

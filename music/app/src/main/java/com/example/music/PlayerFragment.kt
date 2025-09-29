@@ -1,6 +1,5 @@
 package com.example.music
 
-//Imports necessary package like android, exoplayer, retrofit,...
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -13,28 +12,29 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.bumptech.glide.Glide
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.slider.Slider
 import java.util.concurrent.TimeUnit
 
-// ==== Main Class ====
 class PlayerFragment : Fragment() {
 
-    // ---------------- UI Components ----------------
     private lateinit var slider: Slider
     private lateinit var textCurrentTime: TextView
     private lateinit var textTotalTime: TextView
     private lateinit var playPauseButton: FloatingActionButton
     private lateinit var repeatButton: ImageView
-
-    // ---------------- State Flags ----------------
+    private lateinit var coverImage: ImageView
+    private lateinit var rvQueue: RecyclerView
+    private lateinit var queueAdapter: SongAdapter
     private var isUserSeeking = false
 
-    // ---------------- Broadcast Receiver ----------------
-    // Receives updates from MusicService about playback state and progress
+    // Nhận broadcast từ MusicService
     private val musicReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val position = intent?.getLongExtra("position", 0L) ?: 0L
@@ -44,20 +44,25 @@ class PlayerFragment : Fragment() {
             val title = intent?.getStringExtra("title") ?: ""
             val artist = intent?.getStringExtra("artist") ?: ""
             val coverUrl = intent?.getStringExtra("cover") ?: ""
+            queueAdapter.notifyDataSetChanged()
 
-            // Update toolbar with song title and artist
-            val toolbar = view?.findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.Toolbar)
+            // Toolbar
+            val toolbar = view?.findViewById<MaterialToolbar>(R.id.Toolbar)
             toolbar?.title = title
             toolbar?.subtitle = artist
 
-            // Load cover image with Glide
-            val coverImage = view?.findViewById<ImageView>(R.id.imageView)
-            Glide.with(requireContext())
-                .load(coverUrl)
-                .placeholder(R.drawable.image_24px)
-                .into(coverImage!!)
+            // Ảnh bìa
+            if (!coverUrl.isNullOrEmpty()) {
+                Glide.with(requireContext())
+                    .load(coverUrl)
+                    .placeholder(R.drawable.image_24px)
+                    .error(R.drawable.image_24px)
+                    .into(coverImage)
+            } else {
+                coverImage.setImageResource(R.drawable.image_24px)
+            }
 
-            // Update slider if user is not dragging
+            // Slider
             if (!isUserSeeking && duration > 0) {
                 if (slider.valueTo != duration.toFloat()) {
                     slider.valueTo = duration.toFloat()
@@ -65,47 +70,47 @@ class PlayerFragment : Fragment() {
                 slider.value = position.toFloat().coerceAtMost(duration.toFloat())
             }
 
-            // Update text times
+            // Thời gian
             textCurrentTime.text = formatTime(position)
             textTotalTime.text = if (duration > 0) formatTime(duration) else "--:--"
 
-            // Update play/pause button icon and tag
+            // Nút play/pause
             playPauseButton.setImageResource(
                 if (isPlaying) R.drawable.pause_24px else R.drawable.play
             )
             playPauseButton.tag = if (isPlaying) "pause" else "play"
 
-            // Update repeat button icon
+            // Nút repeat
             repeatButton.setImageResource(
                 if (isRepeating) R.drawable.repeat_one_24px else R.drawable.repeat
             )
         }
     }
 
-    // ---------------- Lifecycle ----------------
-    // Inflate fragment layout
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.fragment_player, container, false)
 
-    // Initialize UI components and set event listeners
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Init views
         slider = view.findViewById(R.id.progressSlider)
         textCurrentTime = view.findViewById(R.id.songCurrentProgress)
         textTotalTime = view.findViewById(R.id.songTotalTime)
         playPauseButton = view.findViewById(R.id.playPauseButton)
         repeatButton = view.findViewById(R.id.repeatButton)
+        coverImage = view.findViewById(R.id.imageView)
+        rvQueue = view.findViewById(R.id.rvQueue)
 
-        // Handle play/pause and repeat toggle clicks
+
+        // Nút play/pause và repeat
         playPauseButton.setOnClickListener { sendMusicCommand("TOGGLE_PLAY") }
         repeatButton.setOnClickListener { sendMusicCommand("TOGGLE_REPEAT") }
 
-        // Handle user dragging the slider
+        // Slider
         slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
                 isUserSeeking = true
@@ -116,9 +121,68 @@ class PlayerFragment : Fragment() {
                 sendMusicCommand("SEEK_TO", slider.value.toLong())
             }
         })
+
+        val nextButton = view.findViewById<ImageView>(R.id.nextButton)
+        val previousButton = view.findViewById<ImageView>(R.id.previousButton)
+
+        nextButton.setOnClickListener {
+            val next = MusicQueueManager.playNext()
+            next?.let {
+                MusicService.play(
+                    it.url,
+                    requireContext(),
+                    title = it.title,
+                    artist = it.artist,
+                    cover = it.cover
+                )
+                queueAdapter.notifyDataSetChanged()
+            }
+        }
+
+        previousButton.setOnClickListener {
+            val prev = MusicQueueManager.playPrevious()
+            prev?.let {
+                MusicService.play(
+                    it.url,
+                    requireContext(),
+                    title = it.title,
+                    artist = it.artist,
+                    cover = it.cover
+                )
+                queueAdapter.notifyDataSetChanged()
+            }
+        }
+
+        // Queue
+        rvQueue.layoutManager = LinearLayoutManager(requireContext())
+        queueAdapter = SongAdapter(MusicQueueManager.getQueue()) { song ->
+            MusicQueueManager.setCurrentSong(song)
+            MusicService.play(
+                song.url,
+                requireContext(),
+                title = song.title,
+                artist = song.artist,
+                cover = song.cover
+            )
+            queueAdapter.notifyDataSetChanged()
+        }
+        rvQueue.adapter = queueAdapter
+        queueAdapter.notifyDataSetChanged()
+
+        // Nút toggle queue
+        val btnQueue = view.findViewById<androidx.appcompat.widget.AppCompatImageButton>(R.id.playlist_play)
+        btnQueue.setOnClickListener {
+            if (rvQueue.visibility == View.GONE) {
+                rvQueue.visibility = View.VISIBLE
+                coverImage.visibility = View.GONE
+                queueAdapter.notifyDataSetChanged()
+            } else {
+                rvQueue.visibility = View.GONE
+                coverImage.visibility = View.VISIBLE
+            }
+        }
     }
 
-    // Register BroadcastReceiver to receive updates from MusicService
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onStart() {
         super.onStart()
@@ -135,27 +199,24 @@ class PlayerFragment : Fragment() {
         }
     }
 
-    // Unregister BroadcastReceiver when fragment stops
     override fun onStop() {
         super.onStop()
         requireContext().unregisterReceiver(musicReceiver)
     }
 
-    // ---------------- Helper Functions ----------------
-    // Sends a command (play/pause, seek, repeat toggle) to MusicService
     private fun sendMusicCommand(action: String, seekTo: Long? = null) {
         val intent = Intent(requireContext(), MusicService::class.java).apply {
-            putExtra("ACTION", action)
+            this.action = action
             seekTo?.let { putExtra("SEEK_TO", it) }
         }
         requireContext().startForegroundService(intent)
     }
 
-    // Convert milliseconds into "mm:ss" format
     @SuppressLint("DefaultLocale")
     private fun formatTime(milliseconds: Long): String {
         val minutes = TimeUnit.MILLISECONDS.toMinutes(milliseconds)
         val seconds = TimeUnit.MILLISECONDS.toSeconds(milliseconds) % 60
         return String.format("%d:%02d", minutes, seconds)
     }
+
 }
