@@ -14,6 +14,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -105,7 +106,6 @@ class PlayerFragment : Fragment() {
         coverImage = view.findViewById(R.id.imageView)
         rvQueue = view.findViewById(R.id.rvQueue)
 
-
         // Nút play/pause và repeat
         playPauseButton.setOnClickListener { sendMusicCommand("TOGGLE_PLAY") }
         repeatButton.setOnClickListener { sendMusicCommand("TOGGLE_REPEAT") }
@@ -115,13 +115,13 @@ class PlayerFragment : Fragment() {
             override fun onStartTrackingTouch(slider: Slider) {
                 isUserSeeking = true
             }
-
             override fun onStopTrackingTouch(slider: Slider) {
                 isUserSeeking = false
                 sendMusicCommand("SEEK_TO", slider.value.toLong())
             }
         })
 
+        // Nút next/previous
         val nextButton = view.findViewById<ImageView>(R.id.nextButton)
         val previousButton = view.findViewById<ImageView>(R.id.previousButton)
 
@@ -168,6 +168,24 @@ class PlayerFragment : Fragment() {
         }
         rvQueue.adapter = queueAdapter
         queueAdapter.notifyDataSetChanged()
+
+        // Swipe to delete
+        val itemTouchHelper =
+            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean = false
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val position = viewHolder.adapterPosition
+                    val song = MusicQueueManager.getQueue()[position]
+                    MusicQueueManager.remove(song)
+                    queueAdapter.notifyItemRemoved(position)
+                }
+            })
+        itemTouchHelper.attachToRecyclerView(rvQueue)
 
         // Nút toggle queue
         val btnQueue = view.findViewById<androidx.appcompat.widget.AppCompatImageButton>(R.id.playlist_play)
@@ -218,5 +236,4 @@ class PlayerFragment : Fragment() {
         val seconds = TimeUnit.MILLISECONDS.toSeconds(milliseconds) % 60
         return String.format("%d:%02d", minutes, seconds)
     }
-
 }

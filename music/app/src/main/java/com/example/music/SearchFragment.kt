@@ -14,6 +14,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class SearchFragment : Fragment() {
+
     private lateinit var searchInput: EditText
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: SongAdapter
@@ -26,12 +27,13 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         searchInput = view.findViewById(R.id.searchInput)
         recyclerView = view.findViewById(R.id.recyclerView)
 
         adapter = SongAdapter(songs) { song ->
             //Add in queue
-            MusicQueueManager.add(song)
+            MusicQueueManager.add(song, requireContext())
 
             //Play the song if the queue empty
             if (MusicQueueManager.getQueue().size == 1) {
@@ -58,9 +60,9 @@ class SearchFragment : Fragment() {
                     searchSongs(keyword)
                 }
             }
+
             override fun afterTextChanged(s: android.text.Editable?) {}
         })
-
     }
 
     private fun searchSongs(keyword: String) {
@@ -76,7 +78,7 @@ class SearchFragment : Fragment() {
                     songs.addAll(tracks.map {
                         Song(
                             title = it.title,
-                            url = it.preview, // dùng preview để phát nhạc
+                            url = it.preview, // Using preview 'cause song url doesn't exist for free api user
                             artist = it.artist.name,
                             cover = it.album.cover
                         )
