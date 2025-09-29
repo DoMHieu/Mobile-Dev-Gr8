@@ -3,7 +3,7 @@ Khuyến khích sử dụng kotlin vì code nó ngắn gọn và dễ đọc hơ
 
 Giao việc:<br>
 1 Quản lý tiến độ <br>
-3 front end (Những người còn lại)<br>
+Front end (Những người còn lại)<br>
 2 back end (Đỗ Minh Hiếu + thằng viết cái này)<br>
 1 tester + reporter + presentation (Mai Hùng)<br>
 
