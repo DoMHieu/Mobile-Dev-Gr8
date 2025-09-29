@@ -3,12 +3,12 @@ Khuyến khích sử dụng kotlin vì code nó ngắn gọn và dễ đọc hơ
 
 Giao việc:<br>
 1 Quản lý tiến độ <br>
-3 front end (Những người còn lại)<br>
+Front end (Những người còn lại)<br>
 2 back end (Đỗ Minh Hiếu + thằng viết cái này)<br>
 1 tester + reporter + presentation (Mai Hùng)<br>
 
-Update tiến trình dự án ngày 27/9/2025:<br>
-Đã xong search function, API, và player (background run)<br>
+Update tiến trình dự án ngày 29/9/2025:<br>
+Đã xong queue, và các chức năng cơ bản của 1 cái player, đã xong cả search<br>
 Giờ còn thiếu phần thiết kế cứng và màn hình home chưa biết nên làm gì<br>
 Thế nên nhóm fontend cố mà hoàn thiện đi :Đ <br>
 
