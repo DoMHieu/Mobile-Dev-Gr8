@@ -43,7 +43,8 @@ class SearchFragment : Fragment() {
                     requireContext(),
                     title = song.title,
                     artist = song.artist,
-                    cover = song.cover
+                    cover = song.cover,
+                    coverXL = song.coverXL,
                 )
             }
         }
@@ -80,7 +81,8 @@ class SearchFragment : Fragment() {
                             title = it.title,
                             url = it.preview, // Using preview 'cause song url doesn't exist for free api user
                             artist = it.artist.name,
-                            cover = it.album.cover
+                            cover = it.album.cover,
+                            coverXL = it.album.cover_xl
                         )
                     })
                     adapter.notifyDataSetChanged()

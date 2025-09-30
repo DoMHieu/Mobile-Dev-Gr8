@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.Target
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.slider.Slider
@@ -47,6 +48,8 @@ class PlayerFragment : Fragment() {
             val title = intent?.getStringExtra("title") ?: ""
             val artist = intent?.getStringExtra("artist") ?: ""
             val coverUrl = intent?.getStringExtra("cover") ?: ""
+            val coverUrlXL = intent?.getStringExtra("cover_xl") ?: ""
+
             queueAdapter.notifyDataSetChanged()
 
             // Toolbar
@@ -55,9 +58,10 @@ class PlayerFragment : Fragment() {
             toolbar?.subtitle = artist
 
             // Ảnh bìa
-            if (coverUrl.isNotEmpty()) {
+            if (coverUrlXL.isNotEmpty()) {
                 Glide.with(requireContext())
-                    .load(coverUrl)
+                    .load(coverUrlXL)
+                    .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                     .placeholder(R.drawable.image_24px)
                     .error(R.drawable.image_24px)
                     .into(coverImage)
@@ -135,7 +139,8 @@ class PlayerFragment : Fragment() {
                     requireContext(),
                     title = it.title,
                     artist = it.artist,
-                    cover = it.cover
+                    cover = it.cover,
+                    coverXL = it.coverXL
                 )
                 queueAdapter.notifyDataSetChanged()
             }
@@ -149,7 +154,8 @@ class PlayerFragment : Fragment() {
                     requireContext(),
                     title = it.title,
                     artist = it.artist,
-                    cover = it.cover
+                    cover = it.cover,
+                    coverXL = it.coverXL,
                 )
                 queueAdapter.notifyDataSetChanged()
             }
@@ -164,7 +170,8 @@ class PlayerFragment : Fragment() {
                 requireContext(),
                 title = song.title,
                 artist = song.artist,
-                cover = song.cover
+                cover = song.cover,
+                coverXL = song.coverXL
             )
             queueAdapter.notifyDataSetChanged()
         }
@@ -195,7 +202,8 @@ class PlayerFragment : Fragment() {
                                 requireContext(),
                                 title = next.title,
                                 artist = next.artist,
-                                cover = next.cover
+                                cover = next.cover,
+                                coverXL = next.coverXL,
                             )
                         } else { //else, continue to run, this code only work to update queue
                             MusicService.next(requireContext())

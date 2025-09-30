@@ -27,15 +27,17 @@ class MusicService : Service() {
     private var currentTitle: String = ""
     private var currentArtist: String = ""
     private var currentCover: String = ""
+    private var coverXL: String = ""
 
     companion object {
-        fun play(url: String, context: Context, title: String = "", artist: String = "", cover: String = "") {
+        fun play(url: String, context: Context, title: String = "", artist: String = "", cover: String = "", coverXL: String = "") {
             val intent = Intent(context, MusicService::class.java).apply {
                 action = "PLAY_URL"
                 putExtra("URL", url)
                 putExtra("TITLE", title)
                 putExtra("ARTIST", artist)
                 putExtra("COVER", cover)
+                putExtra("COVER_XL", coverXL)
             }
             context.startForegroundService(intent)
         }
@@ -105,7 +107,7 @@ class MusicService : Service() {
                 currentTitle = intent.getStringExtra("TITLE") ?: ""
                 currentArtist = intent.getStringExtra("ARTIST") ?: ""
                 currentCover = intent.getStringExtra("COVER") ?: ""
-
+                coverXL = intent.getStringExtra("COVER_XL") ?: ""
                 exoPlayer.setMediaItem(MediaItem.fromUri(url.toUri()))
                 exoPlayer.prepare()
                 exoPlayer.play()
@@ -159,7 +161,7 @@ class MusicService : Service() {
         currentTitle = song.title
         currentArtist = song.artist
         currentCover = song.cover
-
+        coverXL = song.coverXL
         exoPlayer.setMediaItem(MediaItem.fromUri(song.url.toUri()))
         exoPlayer.prepare()
         exoPlayer.play()
@@ -209,6 +211,7 @@ class MusicService : Service() {
                 putExtra("title", currentTitle)
                 putExtra("artist", currentArtist)
                 putExtra("cover", currentCover)
+                putExtra("cover_xl", coverXL)
             }
             sendBroadcast(intent)
         }
