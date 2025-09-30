@@ -51,7 +51,7 @@ class MusicService : Service() {
             if (::exoPlayer.isInitialized && exoPlayer.isPlaying) {
                 sendProgressBroadcast()
             }
-            handler.postDelayed(this, 1000)
+            handler.postDelayed(this, 100) //for handler update 10 times in 1 second, no limit = most CPU use but most smooth
         }
     }
 
