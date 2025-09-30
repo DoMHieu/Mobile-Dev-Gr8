@@ -43,7 +43,7 @@ class SongAdapter(
         val current = MusicQueueManager.getCurrent()
         if (current != null && current.url == song.url) {
             holder.itemView.setBackgroundColor(
-                ContextCompat.getColor(holder.itemView.context, R.color.black)
+                ContextCompat.getColor(holder.itemView.context, R.color.md_theme_dark_primary)
             )
             holder.playingIcon.visibility = View.VISIBLE
         } else {
