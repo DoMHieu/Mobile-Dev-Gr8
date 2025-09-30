@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:padding="8dp"
     android:layout_width="match_parent"
@@ -6,11 +7,12 @@
 
     <EditText
         android:id="@+id/searchInput"
-        android:hint="Song search (press enter on keyboard to search)"
+        android:hint="Song search"
         android:imeOptions="actionSearch"
         android:inputType="text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        tools:ignore="HardcodedText" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

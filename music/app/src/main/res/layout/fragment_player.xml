@@ -19,8 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:navigationIcon="@drawable/music_note_24px"
-            tools:title="Tên bài hát"
-            tools:subtitle="Tên nghệ sĩ" />
+            tools:title="@tools:sample/full_names"
+            tools:subtitle="@tools:sample/last_names" />
 
         <!-- Cover + Queue (thay thế nhau) -->
         <FrameLayout
@@ -70,6 +70,7 @@
             <com.google.android.material.slider.Slider
                 android:id="@+id/progressSlider"
                 style="@style/Widget.Material3.Slider"
+                app:labelBehavior="gone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:maxHeight="2dp"
