@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.widget.SeekBar
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,13 +22,12 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.slider.Slider
 import java.util.concurrent.TimeUnit
 import androidx.core.view.isGone
 
 class PlayerFragment : Fragment() {
 
-    private lateinit var slider: Slider
+    private lateinit var slider: SeekBar
     private lateinit var textCurrentTime: TextView
     private lateinit var textTotalTime: TextView
     private lateinit var playPauseButton: FloatingActionButton
@@ -71,10 +71,10 @@ class PlayerFragment : Fragment() {
 
             // Slider
             if (!isUserSeeking && duration > 0) {
-                if (slider.valueTo != duration.toFloat()) {
-                    slider.valueTo = duration.toFloat()
+                if (slider.max != duration.toInt()) {
+                    slider.max = duration.toInt()
                 }
-                slider.value = position.toFloat().coerceAtMost(duration.toFloat())
+                slider.progress = position.toInt().coerceAtMost(duration.toInt())
             }
 
             // Thời gian
@@ -117,13 +117,22 @@ class PlayerFragment : Fragment() {
         repeatButton.setOnClickListener { sendMusicCommand("TOGGLE_REPEAT") }
 
         // Slider
-        slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
-            override fun onStartTrackingTouch(slider: Slider) {
+        slider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
                 isUserSeeking = true
             }
-            override fun onStopTrackingTouch(slider: Slider) {
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 isUserSeeking = false
-                sendMusicCommand("SEEK_TO", slider.value.toLong())
+                seekBar?.let {
+                    sendMusicCommand("SEEK_TO", it.progress.toLong())
+                }
+            }
+
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    textCurrentTime.text = formatTime(progress.toLong())
+                }
             }
         })
 

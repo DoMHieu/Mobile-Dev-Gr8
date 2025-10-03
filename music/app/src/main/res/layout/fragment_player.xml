@@ -67,10 +67,8 @@
                 app:layout_constraintBottom_toBottomOf="@id/progressSlider"
                 app:layout_constraintEnd_toStartOf="@id/progressSlider"/>
 
-            <com.google.android.material.slider.Slider
+            <SeekBar
                 android:id="@+id/progressSlider"
-                style="@style/Widget.Material3.Slider"
-                app:labelBehavior="gone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:maxHeight="2dp"
@@ -78,6 +76,7 @@
                 app:layout_constraintEnd_toStartOf="@id/songTotalTime"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
+
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/songTotalTime"

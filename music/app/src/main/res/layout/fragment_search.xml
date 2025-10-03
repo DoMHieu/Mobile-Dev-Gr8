@@ -7,7 +7,7 @@
 
     <EditText
         android:id="@+id/searchInput"
-        android:hint="Song search"
+        android:hint="Search"
         android:imeOptions="actionSearch"
         android:inputType="text"
         android:layout_width="match_parent"

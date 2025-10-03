@@ -157,17 +157,22 @@ class MusicService : Service() {
     }
 
     private fun playSong(song: Song) {
-        MusicQueueManager.setCurrentSong(song)
-        currentTitle = song.title
-        currentArtist = song.artist
-        currentCover = song.cover
-        coverXL = song.coverXL
-        exoPlayer.setMediaItem(MediaItem.fromUri(song.url.toUri()))
-        exoPlayer.prepare()
-        exoPlayer.play()
-        updateNotification("Playing: ${song.title}")
-        sendProgressBroadcast()
+        MusicQueueManager.getPlayableSong(song) { refreshed ->
+            refreshed?.let {
+                MusicQueueManager.setCurrentSong(it)
+                currentTitle = it.title
+                currentArtist = it.artist
+                currentCover = it.cover
+                coverXL = it.coverXL
+                exoPlayer.setMediaItem(MediaItem.fromUri(it.url.toUri()))
+                exoPlayer.prepare()
+                exoPlayer.play()
+                updateNotification("Playing: ${it.title}")
+                sendProgressBroadcast()
+            }
+        }
     }
+
 
     private fun createNotificationChannel() {
         val channel = NotificationChannel(

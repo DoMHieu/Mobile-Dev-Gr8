@@ -60,6 +60,19 @@ object MusicQueueManager {
             }
         }
     }
+    fun getPlayableSong(song: Song, callback: (Song?) -> Unit) {
+        val now = System.currentTimeMillis()
+        val expired = (now - song.lastFetchTime) > 10 * 60 * 1000 // 10 phút
+
+        if (song.url.isEmpty() || expired) {
+            DeezerApiHelper.refreshPreview(song) { refreshed ->
+                callback(refreshed)
+            }
+        } else {
+            callback(song)
+        }
+    }
+
 
 }
 

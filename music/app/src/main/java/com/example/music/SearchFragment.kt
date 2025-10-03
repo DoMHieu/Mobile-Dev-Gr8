@@ -78,13 +78,16 @@ class SearchFragment : Fragment() {
                     songs.clear()
                     songs.addAll(tracks.map {
                         Song(
+                            id = it.id, // thêm id
                             title = it.title,
-                            url = it.preview, // Using preview 'cause song url doesn't exist for free api user
+                            url = it.preview,
                             artist = it.artist.name,
                             cover = it.album.cover,
-                            coverXL = it.album.cover_xl
+                            coverXL = it.album.cover_xl,
+                            lastFetchTime = System.currentTimeMillis()
                         )
                     })
+
                     adapter.notifyDataSetChanged()
                 }
             }
