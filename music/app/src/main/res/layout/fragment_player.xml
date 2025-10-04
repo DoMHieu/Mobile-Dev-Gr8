@@ -121,12 +121,14 @@
                 android:padding="16dp"
                 app:srcCompat="@drawable/skip_previous_24px" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/playPauseButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/play"
-                android:backgroundTint="#CCCCFF" />
+                android:background="@drawable/bg_circle_button"
+                android:padding="16dp"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/play" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/nextButton"

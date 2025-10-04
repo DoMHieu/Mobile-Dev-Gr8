@@ -31,7 +31,7 @@ class PlayerFragment : Fragment() {
     private lateinit var slider: SeekBar
     private lateinit var textCurrentTime: TextView
     private lateinit var textTotalTime: TextView
-    private lateinit var playPauseButton: FloatingActionButton
+    private lateinit var playPauseButton: ImageView
     private lateinit var repeatButton: ImageView
     private lateinit var coverImage: ImageView
     private lateinit var rvQueue: RecyclerView
