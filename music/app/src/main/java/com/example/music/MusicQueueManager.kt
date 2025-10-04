@@ -46,7 +46,6 @@ object MusicQueueManager {
 
         if (song == currentSong) {
             if (queue.isNotEmpty()) {
-                // Ưu tiên bài đứng ở cùng vị trí (chính là bài "tiếp theo" sau khi remove)
                 currentIndex = minOf(removedIndex, queue.size - 1)
                 currentSong = queue[currentIndex]
             } else {
@@ -54,7 +53,6 @@ object MusicQueueManager {
                 currentIndex = -1
             }
         } else {
-            // Nếu xoá bài đứng trước currentIndex, dịch trái index hiện tại
             if (removedIndex < currentIndex) {
                 currentIndex--
             }

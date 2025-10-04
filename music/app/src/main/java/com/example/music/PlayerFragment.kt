@@ -24,9 +24,10 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.concurrent.TimeUnit
 import androidx.core.view.isGone
+import android.widget.Toast
+
 
 class PlayerFragment : Fragment() {
-
     private lateinit var slider: SeekBar
     private lateinit var textCurrentTime: TextView
     private lateinit var textTotalTime: TextView
@@ -69,7 +70,7 @@ class PlayerFragment : Fragment() {
                 coverImage.setImageResource(R.drawable.image_24px)
             }
 
-            // Slider
+            // slider, replaced with seekbar, still keep using slider as variable
             if (!isUserSeeking && duration > 0) {
                 if (slider.max != duration.toInt()) {
                     slider.max = duration.toInt()
@@ -77,17 +78,12 @@ class PlayerFragment : Fragment() {
                 slider.progress = position.toInt().coerceAtMost(duration.toInt())
             }
 
-            // Thời gian
             textCurrentTime.text = formatTime(position)
             textTotalTime.text = if (duration > 0) formatTime(duration) else "--:--"
-
-            // Nút play/pause
             playPauseButton.setImageResource(
                 if (isPlaying) R.drawable.pause_24px else R.drawable.play
             )
             playPauseButton.tag = if (isPlaying) "pause" else "play"
-
-            // Nút repeat
             repeatButton.setImageResource(
                 if (isRepeating) R.drawable.repeat_one_24px else R.drawable.repeat
             )
@@ -136,10 +132,9 @@ class PlayerFragment : Fragment() {
             }
         })
 
-        // Nút next/previous
+        //Next, Previous
         val nextButton = view.findViewById<ImageView>(R.id.nextButton)
         val previousButton = view.findViewById<ImageView>(R.id.previousButton)
-
         nextButton.setOnClickListener {
             val next = MusicQueueManager.playNext()
             next?.let {
@@ -154,7 +149,6 @@ class PlayerFragment : Fragment() {
                 queueAdapter.notifyDataSetChanged()
             }
         }
-
         previousButton.setOnClickListener {
             val prev = MusicQueueManager.playPrevious()
             prev?.let {
@@ -173,16 +167,22 @@ class PlayerFragment : Fragment() {
         // Queue
         rvQueue.layoutManager = LinearLayoutManager(requireContext())
         queueAdapter = SongAdapter(MusicQueueManager.getQueue()) { song ->
-            MusicQueueManager.setCurrentSong(song)
-            MusicService.play(
-                song.url,
-                requireContext(),
-                title = song.title,
-                artist = song.artist,
-                cover = song.cover,
-                coverXL = song.coverXL
-            )
-            queueAdapter.notifyDataSetChanged()
+            MusicQueueManager.getPlayableSong(song) { playable ->
+                if (playable != null) {
+                    MusicQueueManager.setCurrentSong(playable)
+                    MusicService.play(
+                        playable.url,
+                        requireContext(),
+                        title = playable.title,
+                        artist = playable.artist,
+                        cover = playable.cover,
+                        coverXL = playable.coverXL
+                    )
+                    queueAdapter.notifyDataSetChanged()
+                } else {
+                    Toast.makeText(requireContext(), "Invalid song, try delete from queue and retry!", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
         rvQueue.adapter = queueAdapter
         queueAdapter.notifyDataSetChanged()
