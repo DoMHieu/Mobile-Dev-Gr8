@@ -12,6 +12,10 @@
         android:inputType="text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/search_box"
+        android:padding="10dp"
+        android:drawableStart="@drawable/search"
+        android:drawablePadding="8dp"
         tools:ignore="HardcodedText" />
 
     <androidx.recyclerview.widget.RecyclerView
