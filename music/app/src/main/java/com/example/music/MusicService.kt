@@ -3,9 +3,11 @@ package com.example.music
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -15,22 +17,38 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 
 class MusicService : Service() {
 
+    override fun onBind(intent: Intent?): IBinder? = null
+
     private lateinit var exoPlayer: ExoPlayer
+    private val handler = Handler(Looper.getMainLooper())
     private val CHANNEL_ID = "music_channel_id"
     private val NOTIFICATION_ID = 1
-    private val handler = Handler(Looper.getMainLooper())
-
-    //Current song info
     private var currentTitle: String = ""
     private var currentArtist: String = ""
     private var currentCover: String = ""
     private var coverXL: String = ""
+    private lateinit var mediaSession: MediaSessionCompat
 
     companion object {
-        fun play(url: String, context: Context, title: String = "", artist: String = "", cover: String = "", coverXL: String = "") {
+        // Start playing a specific song
+        fun play(
+            url: String,
+            context: Context,
+            title: String = "",
+            artist: String = "",
+            cover: String = "",
+            coverXL: String = ""
+        ) {
             val intent = Intent(context, MusicService::class.java).apply {
                 action = "PLAY_URL"
                 putExtra("URL", url)
@@ -42,108 +60,167 @@ class MusicService : Service() {
             context.startForegroundService(intent)
         }
 
+        // Play the next song in the queue
         fun next(context: Context) {
-            context.startService(Intent(context, MusicService::class.java).apply { action = "NEXT" })
+            context.startForegroundService(Intent(context, MusicService::class.java).apply { action = "NEXT" })
         }
     }
 
-    // Runnable update progress
     private val updateRunnable = object : Runnable {
         override fun run() {
-            if (::exoPlayer.isInitialized && exoPlayer.isPlaying) {
+            if (::exoPlayer.isInitialized) {
                 sendProgressBroadcast()
             }
-            handler.postDelayed(this, 1000) //for handler update 1 times in 1 second, no limit = most CPU use but smoothest
+            handler.postDelayed(this, 1000)
         }
     }
 
+    // Initialize the service, player, and media session
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+        mediaSession = MediaSessionCompat(this, "MusicService").apply {
+            isActive = true
+            setCallback(mediaSessionCallback)
+        }
 
         exoPlayer = ExoPlayer.Builder(this).build()
         exoPlayer.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
-                if (state == Player.STATE_ENDED) {
-                    handleSongEnded()
-                }
+                if (state == Player.STATE_ENDED) handleSongEnded()
+                updateNotification()
+                updatePlaybackState()
+            }
+
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                updateNotification()
+                updatePlaybackState()
             }
         })
 
-        startForeground(NOTIFICATION_ID, buildNotification("Waiting to play..."))
+        startForeground(NOTIFICATION_ID, buildNotification())
         handler.post(updateRunnable)
     }
 
+    // Handle incoming service commands (play, pause, seek, etc.)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        when (intent?.action) {
-            "TOGGLE_PLAY" -> {
-                if (exoPlayer.isPlaying) {
-                    exoPlayer.pause()
-                    updateNotification("Paused")
-                } else {
-                    exoPlayer.play()
-                    updateNotification("Playing")
+        intent?.action?.let { action ->
+            when (action) {
+                "TOGGLE_PLAY" -> {
+                    if (exoPlayer.isPlaying) exoPlayer.pause() else exoPlayer.play()
+                    updateNotification()
+                    updatePlaybackState()
+                    sendProgressBroadcast()
                 }
-                sendProgressBroadcast()
-            }
 
-            "SEEK_TO" -> {
-                val position = intent.getLongExtra("SEEK_TO", 0L)
-                exoPlayer.seekTo(position)
-                sendProgressBroadcast()
-            }
+                "SEEK_TO" -> {
+                    val position = intent.getLongExtra("SEEK_TO", 0L)
+                    exoPlayer.seekTo(position)
+                    updatePlaybackState()
+                    sendProgressBroadcast()
+                }
 
-            "TOGGLE_REPEAT" -> {
-                exoPlayer.repeatMode =
-                    if (exoPlayer.repeatMode == ExoPlayer.REPEAT_MODE_ONE)
-                        ExoPlayer.REPEAT_MODE_OFF
-                    else
-                        ExoPlayer.REPEAT_MODE_ONE
-                sendProgressBroadcast()
-            }
+                "TOGGLE_REPEAT" -> {
+                    exoPlayer.repeatMode =
+                        if (exoPlayer.repeatMode == ExoPlayer.REPEAT_MODE_ONE)
+                            ExoPlayer.REPEAT_MODE_OFF
+                        else
+                            ExoPlayer.REPEAT_MODE_ONE
+                    sendProgressBroadcast()
+                }
 
-            "PLAY_URL" -> {
-                val url = intent.getStringExtra("URL") ?: return START_NOT_STICKY
-                currentTitle = intent.getStringExtra("TITLE") ?: ""
-                currentArtist = intent.getStringExtra("ARTIST") ?: ""
-                currentCover = intent.getStringExtra("COVER") ?: ""
-                coverXL = intent.getStringExtra("COVER_XL") ?: ""
-                exoPlayer.setMediaItem(MediaItem.fromUri(url.toUri()))
-                exoPlayer.prepare()
-                exoPlayer.play()
-                updateNotification("Playing: $currentTitle")
-                sendProgressBroadcast()
-            }
+                "PLAY_URL" -> {
+                    val url = intent.getStringExtra("URL") ?: return START_NOT_STICKY
+                    currentTitle = intent.getStringExtra("TITLE") ?: ""
+                    currentArtist = intent.getStringExtra("ARTIST") ?: ""
+                    currentCover = intent.getStringExtra("COVER") ?: ""
+                    coverXL = intent.getStringExtra("COVER_XL") ?: ""
 
-            "NEXT" -> {
-                val next = MusicQueueManager.playNext()
-                next?.let { playSong(it) }
-            }
+                    exoPlayer.setMediaItem(MediaItem.fromUri(url.toUri()))
+                    exoPlayer.prepare()
+                    exoPlayer.play()
 
-            "PREVIOUS" -> {
-                val prev = MusicQueueManager.playPrevious()
-                prev?.let { playSong(it) }
+                    if (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            !handler.hasCallbacks(updateRunnable)
+                        } else {
+                            true
+                        }
+                    ) {
+                        handler.post(updateRunnable)
+                    }
+
+                    updateNotification()
+                    updatePlaybackState()
+                    sendProgressBroadcast()
+                }
+
+                "NEXT" -> {
+                    val next = MusicQueueManager.playNext()
+                    next?.let { playSong(it) }
+                }
+
+                "PREVIOUS" -> {
+                    val prev = MusicQueueManager.playPrevious()
+                    prev?.let { playSong(it) }
+                }
+
+                "STOP" -> stopSelf()
             }
         }
         return START_NOT_STICKY
     }
 
+    // Release all resources when the service is destroyed
     override fun onDestroy() {
         handler.removeCallbacks(updateRunnable)
-        if (::exoPlayer.isInitialized) {
-            exoPlayer.release()
+        if (::exoPlayer.isInitialized) exoPlayer.release()
+        if (::mediaSession.isInitialized) {
+            mediaSession.isActive = false
+            mediaSession.release()
         }
         super.onDestroy()
     }
 
-    override fun onBind(intent: Intent?): IBinder? = null
-
+    // Stop service when removed from recent apps
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
         stopSelf()
     }
 
-    // --- Helper methods ---
+    // Handle media control actions from the system or notifications
+    private val mediaSessionCallback = object : MediaSessionCompat.Callback() {
+        override fun onPlay() {
+            exoPlayer.play()
+            updateNotification()
+            updatePlaybackState()
+            sendProgressBroadcast()
+        }
+
+        override fun onPause() {
+            exoPlayer.pause()
+            updateNotification()
+            updatePlaybackState()
+            sendProgressBroadcast()
+        }
+
+        override fun onSkipToNext() {
+            val next = MusicQueueManager.playNext()
+            next?.let { playSong(it) }
+        }
+
+        override fun onSkipToPrevious() {
+            val prev = MusicQueueManager.playPrevious()
+            prev?.let { playSong(it) }
+        }
+
+        override fun onSeekTo(pos: Long) {
+            exoPlayer.seekTo(pos)
+            updatePlaybackState()
+            sendProgressBroadcast()
+        }
+    }
+
+    // Handle end of the current song and play the next one
     private fun handleSongEnded() {
         val next = MusicQueueManager.playNext()
         if (next != null) {
@@ -151,11 +228,13 @@ class MusicService : Service() {
         } else {
             exoPlayer.seekTo(0)
             exoPlayer.pause()
-            updateNotification("Queue ended")
+            updateNotification()
+            updatePlaybackState()
             sendProgressBroadcast()
         }
     }
 
+    // Play a new song and update UI components
     private fun playSong(song: Song) {
         MusicQueueManager.getPlayableSong(song) { refreshed ->
             refreshed?.let {
@@ -167,40 +246,14 @@ class MusicService : Service() {
                 exoPlayer.setMediaItem(MediaItem.fromUri(it.url.toUri()))
                 exoPlayer.prepare()
                 exoPlayer.play()
-                updateNotification("Playing: ${it.title}")
+                updateNotification()
+                updatePlaybackState()
                 sendProgressBroadcast()
             }
         }
     }
 
-
-    private fun createNotificationChannel() {
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            "Music Channel",
-            NotificationManager.IMPORTANCE_LOW
-        ).apply {
-            description = "Channel for music playback"
-        }
-        val manager = getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(channel)
-    }
-
-    private fun buildNotification(contentText: String): Notification {
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Music Player")
-            .setContentText(contentText)
-            .setSmallIcon(R.drawable.music_note_24px)
-            .setOngoing(true)
-            .build()
-    }
-
-    private fun updateNotification(contentText: String) {
-        val notification = buildNotification(contentText)
-        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(NOTIFICATION_ID, notification)
-    }
-
+    // Send playback progress to UI components
     private fun sendProgressBroadcast() {
         if (::exoPlayer.isInitialized) {
             val duration = if (exoPlayer.duration == C.TIME_UNSET) 0L else exoPlayer.duration
@@ -219,6 +272,128 @@ class MusicService : Service() {
                 putExtra("cover_xl", coverXL)
             }
             sendBroadcast(intent)
+        }
+    }
+
+    // Create a notification channel for the service
+    private fun createNotificationChannel() {
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "Music Channel",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Channel for music playback"
+            setShowBadge(false)
+        }
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.createNotificationChannel(channel)
+    }
+
+    // Build PendingIntent for notification actions
+    private fun getActionIntent(action: String): PendingIntent {
+        val intent = Intent(this, MusicService::class.java).apply { this.action = action }
+        return PendingIntent.getService(
+            this,
+            action.hashCode(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
+    // Build the main media notification
+    private fun buildNotification(): Notification {
+        val mediaStyle = androidx.media.app.NotificationCompat.MediaStyle()
+            .setMediaSession(mediaSession.sessionToken)
+            .setShowActionsInCompactView(0, 1, 2)
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(currentTitle.ifEmpty { "Music Player" })
+            .setContentText(currentArtist.ifEmpty { "No artist" })
+            .setSmallIcon(R.drawable.music_note_24px)
+            .setOngoing(true)
+            .setShowWhen(false)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setStyle(mediaStyle)
+            .addAction(
+                NotificationCompat.Action(
+                    R.drawable.skip_previous_24px,
+                    "Previous",
+                    getActionIntent("PREVIOUS")
+                )
+            )
+            .addAction(
+                NotificationCompat.Action(
+                    if (exoPlayer.isPlaying) R.drawable.pause_24px else R.drawable.play,
+                    if (exoPlayer.isPlaying) "Pause" else "Play",
+                    getActionIntent("TOGGLE_PLAY")
+                )
+            )
+            .addAction(
+                NotificationCompat.Action(
+                    R.drawable.skip_next_24px,
+                    "Next",
+                    getActionIntent("NEXT")
+                )
+            )
+            .build()
+    }
+
+    // Update existing media notification
+    private fun updateNotification() {
+        val notification = buildNotification()
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.notify(NOTIFICATION_ID, notification)
+    }
+
+    // Update media session playback state and metadata
+    private fun updatePlaybackState() {
+        if (!::exoPlayer.isInitialized) return
+
+        val position = exoPlayer.currentPosition
+        val duration = if (exoPlayer.duration == C.TIME_UNSET) 0L else exoPlayer.duration
+        val playbackSpeed = if (exoPlayer.isPlaying) 1f else 0f
+        val state = if (exoPlayer.isPlaying)
+            PlaybackStateCompat.STATE_PLAYING
+        else
+            PlaybackStateCompat.STATE_PAUSED
+
+        val playbackState = PlaybackStateCompat.Builder()
+            .setState(state, position, playbackSpeed)
+            .setActions(
+                PlaybackStateCompat.ACTION_PLAY or
+                        PlaybackStateCompat.ACTION_PAUSE or
+                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
+                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
+                        PlaybackStateCompat.ACTION_SEEK_TO or
+                        PlaybackStateCompat.ACTION_STOP
+            )
+            .setBufferedPosition(exoPlayer.bufferedPosition)
+            .build()
+
+        mediaSession.setPlaybackState(playbackState)
+
+        val metadataBuilder = android.support.v4.media.MediaMetadataCompat.Builder()
+            .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_TITLE, currentTitle)
+            .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ARTIST, currentArtist)
+            .putLong(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DURATION, duration)
+
+        if (coverXL.isNotEmpty()) {
+            Glide.with(this)
+                .asBitmap()
+                .load(coverXL)
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        metadataBuilder.putBitmap(
+                            android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
+                            resource
+                        )
+                        mediaSession.setMetadata(metadataBuilder.build())
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {}
+                })
+        } else {
+            mediaSession.setMetadata(metadataBuilder.build())
         }
     }
 }

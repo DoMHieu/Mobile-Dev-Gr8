@@ -23,8 +23,8 @@ class SongAdapter(
     inner class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title: TextView = itemView.findViewById(R.id.songTitle)
         val artist: TextView = itemView.findViewById(R.id.songArtist)
-        val cover: ImageView = itemView.findViewById(R.id.songCover)       // ảnh bìa
-        val playingIcon: ImageView = itemView.findViewById(R.id.playingIcon) // icon đang phát
+        val cover: ImageView = itemView.findViewById(R.id.songCover)
+        val playingIcon: ImageView = itemView.findViewById(R.id.playingIcon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
@@ -35,8 +35,6 @@ class SongAdapter(
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val song = items[position]
-
-        // Gán dữ liệu
         holder.title.text = song.title
         holder.artist.text = song.artist
         Glide.with(holder.itemView.context)
@@ -54,7 +52,7 @@ class SongAdapter(
             )
             .into(holder.cover)
 
-        // Highlight nếu là bài hát đang phát
+        //Highlight playing song
         val current = MusicQueueManager.getCurrent()
         if (current != null && current.url == song.url) {
             holder.itemView.setBackgroundResource(R.drawable.playlist_current_play)
@@ -64,7 +62,7 @@ class SongAdapter(
             holder.playingIcon.visibility = View.GONE
         }
 
-        // Xử lý click
+        //OnclickListener for queue
         holder.itemView.setOnClickListener { onClick(song) }
     }
 

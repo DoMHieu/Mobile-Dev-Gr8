@@ -55,4 +55,5 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.8.9")
     implementation("androidx.lifecycle:lifecycle-process:2.9.4")
     implementation("com.github.bumptech.glide:glide:5.0.5")
+    implementation("androidx.media:media:1.7.1")
 }
