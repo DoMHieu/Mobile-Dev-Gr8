@@ -3,5 +3,5 @@
 
     <corners android:radius="8dp" />
 
-    <solid android:color="#CCCCFF" /> <!-- Button fill color -->
+    <solid android:color="?attr/colorOnPrimary" /> <!-- Button fill color -->
 </shape>

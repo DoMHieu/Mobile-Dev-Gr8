@@ -10,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingBottom="48dp">
+        android:paddingBottom="48dp"
+        android:background="?attr/colorPrimary">
 
         <!-- Toolbar -->
         <com.google.android.material.appbar.MaterialToolbar
@@ -20,7 +21,9 @@
             android:layout_height="wrap_content"
             app:navigationIcon="@drawable/music_note_24px"
             tools:title="@tools:sample/full_names"
-            tools:subtitle="@tools:sample/last_names" />
+            tools:subtitle="@tools:sample/last_names"
+            android:background="?attr/colorOnPrimary"
+            />
 
         <!-- Cover + Queue (thay thế nhau) -->
         <FrameLayout
