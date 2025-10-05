@@ -9,6 +9,9 @@ import android.widget.SeekBar
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.load.MultiTransformation
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -21,10 +24,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.concurrent.TimeUnit
 import androidx.core.view.isGone
 import android.widget.Toast
+import com.bumptech.glide.request.RequestOptions
 
 
 class PlayerFragment : Fragment() {
@@ -48,7 +51,6 @@ class PlayerFragment : Fragment() {
             val isRepeating = intent?.getBooleanExtra("isRepeating", false) ?: false
             val title = intent?.getStringExtra("title") ?: ""
             val artist = intent?.getStringExtra("artist") ?: ""
-            val coverUrl = intent?.getStringExtra("cover") ?: ""
             val coverUrlXL = intent?.getStringExtra("cover_xl") ?: ""
 
             queueAdapter.notifyDataSetChanged()
@@ -58,13 +60,21 @@ class PlayerFragment : Fragment() {
             toolbar?.title = title
             toolbar?.subtitle = artist
 
-            // Ảnh bìa
+            //Cover_xl
             if (coverUrlXL.isNotEmpty()) {
                 Glide.with(requireContext())
                     .load(coverUrlXL)
-                    .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                    .placeholder(R.drawable.image_24px)
-                    .error(R.drawable.image_24px)
+                    .apply(
+                        RequestOptions.bitmapTransform(
+                            MultiTransformation(
+                                CenterCrop(),
+                                RoundedCorners(24)
+                            )
+                        )
+                            .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                            .placeholder(R.drawable.image_24px)
+                            .error(R.drawable.image_24px)
+                    )
                     .into(coverImage)
             } else {
                 coverImage.setImageResource(R.drawable.image_24px)
