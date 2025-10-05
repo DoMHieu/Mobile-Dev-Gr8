@@ -1,7 +1,9 @@
 package com.example.music
 
 import android.content.Context
+import android.view.Gravity
 import android.widget.Toast
+
 
 object MusicQueueManager {
     private val queue = mutableListOf<Song>()
