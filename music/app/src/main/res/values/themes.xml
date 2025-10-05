@@ -6,6 +6,7 @@
         <item name="colorPrimaryContainer">@color/md_theme_light_error</item>
         <item name="colorOnPrimaryContainer">@color/md_theme_light_error</item>
         <item name="android:statusBarColor">?attr/colorSurface</item>
+
         <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

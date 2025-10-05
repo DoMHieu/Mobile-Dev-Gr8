@@ -9,6 +9,11 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.MultiTransformation
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 
 class SongAdapter(
     private val items: List<Song>,
@@ -36,7 +41,17 @@ class SongAdapter(
         holder.artist.text = song.artist
         Glide.with(holder.itemView.context)
             .load(song.cover)
-            .placeholder(R.drawable.image_24px)
+            .apply(
+                RequestOptions.bitmapTransform(
+                    MultiTransformation(
+                        CenterCrop(),
+                        RoundedCorners(24)
+                    )
+                )
+                    .override(com.bumptech.glide.request.target.Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                    .placeholder(R.drawable.image_24px)
+                    .error(R.drawable.image_24px)
+            )
             .into(holder.cover)
 
         // Highlight nếu là bài hát đang phát
