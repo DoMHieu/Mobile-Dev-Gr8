@@ -22,7 +22,7 @@
             app:navigationIcon="@drawable/music_note_24px"
             tools:title="@tools:sample/full_names"
             tools:subtitle="@tools:sample/last_names"
-            android:background="?attr/colorOnPrimary"
+            android:background="?attr/colorPrimaryContainer"
             />
 
         <!-- Cover + Queue (thay thế nhau) -->
@@ -80,7 +80,8 @@
                 app:layout_constraintStart_toEndOf="@id/songCurrentProgress"
                 app:layout_constraintEnd_toStartOf="@id/songTotalTime"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
 
 
             <com.google.android.material.textview.MaterialTextView
@@ -131,7 +132,8 @@
                 android:background="@drawable/bg_circle_button"
                 android:padding="16dp"
                 android:scaleType="centerInside"
-                app:srcCompat="@drawable/play" />
+                app:srcCompat="@drawable/play"
+                />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/nextButton"
