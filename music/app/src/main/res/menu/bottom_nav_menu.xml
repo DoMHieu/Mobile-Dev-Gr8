@@ -6,8 +6,5 @@
     <item android:id="@+id/control"
         android:title="Now Playing"
         android:icon="@drawable/music_note_24px"/>
-    <item android:id="@+id/search_button"
-        android:title="Search"
-        android:icon="@drawable/search"/>
 
 </menu>

@@ -24,7 +24,13 @@ class SearchFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.fragment_search, container, false)
-
+    private val randomKeywords = listOf(
+        "love", "summer", "dance", "rock", "deco*27",
+        "PinocchioP", "acoustic", "chill", "happy", "Hatsune Miku"
+    )
+    private fun getRandomKeyword(): String {
+        return randomKeywords.random()
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -51,6 +57,8 @@ class SearchFragment : Fragment() {
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
+        val randomKey = getRandomKeyword()
+        searchSongs(randomKey)
 
         searchInput.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -59,7 +67,8 @@ class SearchFragment : Fragment() {
                 val keyword = s.toString().trim()
                 if (keyword.isNotEmpty()) {
                     searchSongs(keyword)
-                }
+                }; else {val randomKey = getRandomKeyword()
+                    searchSongs(randomKey)}
             }
 
             override fun afterTextChanged(s: android.text.Editable?) {}
@@ -78,12 +87,12 @@ class SearchFragment : Fragment() {
                     songs.clear()
                     songs.addAll(tracks.map {
                         Song(
-                            id = it.id, // thêm id
+                            id = it.id,
                             title = it.title,
-                            url = it.preview,
+                            url = it.preview ?: "",
                             artist = it.artist.name,
-                            cover = it.album.cover,
-                            coverXL = it.album.cover_xl,
+                            cover = it.album.cover ?: "",
+                            coverXL = it.album.cover_xl ?: "",
                             lastFetchTime = System.currentTimeMillis()
                         )
                     })

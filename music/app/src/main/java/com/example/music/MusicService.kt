@@ -187,7 +187,7 @@ class MusicService : Service() {
         stopSelf()
     }
 
-    // Handle media control actions from the system or notifications
+    // Handle media control actions from the system notification
     private val mediaSessionCallback = object : MediaSessionCompat.Callback() {
         override fun onPlay() {
             exoPlayer.play()
@@ -214,9 +214,9 @@ class MusicService : Service() {
         }
 
         override fun onSeekTo(pos: Long) {
-            exoPlayer.seekTo(pos)
             updatePlaybackState()
             sendProgressBroadcast()
+            exoPlayer.seekTo(pos)
         }
     }
 
