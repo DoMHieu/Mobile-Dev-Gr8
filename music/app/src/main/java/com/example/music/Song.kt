@@ -1,9 +1,9 @@
 package com.example.music
 
 data class Song(
-    val id: Long,              // track id từ Deezer
+    val id: Long,
     val title: String,
-    var url: String,           // preview link (có thể thay đổi khi refresh)
+    var url: String,
     val artist: String,
     val cover: String,
     val coverXL: String,

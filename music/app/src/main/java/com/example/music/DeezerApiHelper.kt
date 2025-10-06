@@ -21,7 +21,6 @@ object DeezerApiHelper {
                     callback(null)
                 }
             }
-
             override fun onFailure(call: Call<Track>, t: Throwable) {
                 callback(null)
             }

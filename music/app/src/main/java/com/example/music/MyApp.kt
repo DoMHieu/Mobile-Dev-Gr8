@@ -10,5 +10,4 @@ class MyApp : Application(), DefaultLifecycleObserver {
         super<Application>.onCreate()
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     }
-
 }
