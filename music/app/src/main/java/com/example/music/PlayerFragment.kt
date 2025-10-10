@@ -61,15 +61,12 @@ class PlayerFragment : Fragment() {
             toolbar?.subtitle = artist
 
             //Cover_xl
-            if (coverUrlXL.isNotEmpty()) {
+            if (coverUrlXL.isNotBlank()) {
                 Glide.with(requireContext())
                     .load(coverUrlXL)
                     .apply(
                         RequestOptions.bitmapTransform(
-                            MultiTransformation(
-                                CenterCrop(),
-                                RoundedCorners(24)
-                            )
+                            MultiTransformation(CenterCrop(), RoundedCorners(24))
                         )
                             .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                             .placeholder(R.drawable.image_24px)
@@ -244,6 +241,14 @@ class PlayerFragment : Fragment() {
                 rvQueue.visibility = View.GONE
                 coverImage.visibility = View.VISIBLE
             }
+        }
+        btnQueue.setOnLongClickListener {
+            val intent = Intent(requireContext(), MusicService::class.java).apply {
+                action = "CLEAR_QUEUE"
+            }
+            requireContext().startForegroundService(intent)
+            Toast.makeText(requireContext(), "Queue deleted", Toast.LENGTH_SHORT).show()
+            true
         }
     }
 

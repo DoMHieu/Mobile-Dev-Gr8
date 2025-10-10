@@ -73,6 +73,13 @@ object MusicQueueManager {
         }
     }
 
+    fun removeQueue(callback: (Song?) -> Unit ) {
+        queue.clear()
+        currentSong = null
+        currentIndex = -1
+        callback(null)
+    }
+
 
 }
 

@@ -135,7 +135,6 @@ class MusicService : Service() {
                     currentArtist = intent.getStringExtra("ARTIST") ?: ""
                     currentCover = intent.getStringExtra("COVER") ?: ""
                     coverXL = intent.getStringExtra("COVER_XL") ?: ""
-
                     exoPlayer.setMediaItem(MediaItem.fromUri(url.toUri()))
                     exoPlayer.prepare()
                     exoPlayer.play()
@@ -162,6 +161,15 @@ class MusicService : Service() {
                 "PREVIOUS" -> {
                     val prev = MusicQueueManager.playPrevious()
                     prev?.let { playSong(it) }
+                }
+
+                "CLEAR_QUEUE" -> {
+                    MusicQueueManager.removeQueue {
+                        exoPlayer.stop()
+                        sendBroadcast(Intent("QUEUE_CLEARED"))
+                        updateNotification()
+                        updatePlaybackState()
+                    }
                 }
 
                 "STOP" -> stopSelf()

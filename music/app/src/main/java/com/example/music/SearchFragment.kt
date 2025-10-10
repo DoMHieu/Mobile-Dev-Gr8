@@ -40,7 +40,6 @@ class SearchFragment : Fragment() {
         adapter = SongAdapter(songs) { song ->
             //Add in queue
             MusicQueueManager.add(song, requireContext())
-
             //Play the song if the queue empty
             if (MusicQueueManager.getQueue().size == 1) {
                 MusicQueueManager.setCurrentSong(song)
