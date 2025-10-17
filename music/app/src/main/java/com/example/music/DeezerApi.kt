@@ -13,7 +13,6 @@ interface DeezerApi {
     )
     @GET("track/{id}")
     fun getTrack(@Path("id") id: Long): Call<Track>
-
     @Headers(
         "x-rapidapi-key: 7d312199aamsh3cecd298aa3d7a5p101f9ejsnadc976a2d3aa",
         "X-RapidAPI-Host: deezerdevs-deezer.p.rapidapi.com"

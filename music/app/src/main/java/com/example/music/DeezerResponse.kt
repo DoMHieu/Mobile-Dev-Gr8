@@ -10,8 +10,6 @@ data class Album(
 data class Artist(
     val name: String
 )
-
-
 data class Track(
     val id: Long,
     val title: String,

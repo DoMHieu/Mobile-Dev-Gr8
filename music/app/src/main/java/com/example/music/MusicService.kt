@@ -26,9 +26,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 
 class MusicService : Service() {
-
     override fun onBind(intent: Intent?): IBinder? = null
-
     private lateinit var exoPlayer: ExoPlayer
     private val handler = Handler(Looper.getMainLooper())
     private val CHANNEL_ID = "music_channel_id"
@@ -39,16 +37,15 @@ class MusicService : Service() {
     private var coverXL: String = ""
     private lateinit var mediaSession: MediaSessionCompat
 
-    companion object {
-        // Start playing a specific song
-        fun play(
+    companion object { //static data in kotlin
+        fun play(        // Start playing a specific song
             url: String,
             context: Context,
             title: String = "",
             artist: String = "",
             cover: String = "",
             coverXL: String = ""
-        ) {
+        ) {     //add data to intent
             val intent = Intent(context, MusicService::class.java).apply {
                 action = "PLAY_URL"
                 putExtra("URL", url)
@@ -66,7 +63,7 @@ class MusicService : Service() {
         }
     }
 
-    private val updateRunnable = object : Runnable {
+    private val updateRunnable = object : Runnable { //create Runnable data, to check if exoPlayer is running
         override fun run() {
             if (::exoPlayer.isInitialized) {
                 sendProgressBroadcast()
@@ -78,12 +75,11 @@ class MusicService : Service() {
     // Initialize the service, player, and media session
     override fun onCreate() {
         super.onCreate()
-        createNotificationChannel()
+        createNotificationChannel() //Notification is obligated for using Service
         mediaSession = MediaSessionCompat(this, "MusicService").apply {
             isActive = true
             setCallback(mediaSessionCallback)
         }
-
         exoPlayer = ExoPlayer.Builder(this).build()
         exoPlayer.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
@@ -91,13 +87,11 @@ class MusicService : Service() {
                 updateNotification()
                 updatePlaybackState()
             }
-
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 updateNotification()
                 updatePlaybackState()
             }
         })
-
         startForeground(NOTIFICATION_ID, buildNotification())
         handler.post(updateRunnable)
     }
@@ -268,7 +262,6 @@ class MusicService : Service() {
             val position = exoPlayer.currentPosition
             val isPlaying = exoPlayer.isPlaying
             val isRepeating = exoPlayer.repeatMode == ExoPlayer.REPEAT_MODE_ONE
-
             val intent = Intent("MUSIC_PROGRESS_UPDATE").apply {
                 putExtra("position", position)
                 putExtra("duration", duration)
@@ -315,8 +308,8 @@ class MusicService : Service() {
             .setShowActionsInCompactView(0, 1, 2)
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle(currentTitle.ifEmpty { "Music Player" })
-            .setContentText(currentArtist.ifEmpty { "No artist" })
+            .setContentTitle(currentTitle.ifEmpty { "Did you really choose a song?" })
+            .setContentText(currentArtist.ifEmpty { "Does it hard?" })
             .setSmallIcon(R.drawable.music_note_24px)
             .setOngoing(true)
             .setShowWhen(false)
@@ -356,7 +349,6 @@ class MusicService : Service() {
     // Update media session playback state and metadata
     private fun updatePlaybackState() {
         if (!::exoPlayer.isInitialized) return
-
         val position = exoPlayer.currentPosition
         val duration = if (exoPlayer.duration == C.TIME_UNSET) 0L else exoPlayer.duration
         val playbackSpeed = if (exoPlayer.isPlaying) 1f else 0f
@@ -364,7 +356,6 @@ class MusicService : Service() {
             PlaybackStateCompat.STATE_PLAYING
         else
             PlaybackStateCompat.STATE_PAUSED
-
         val playbackState = PlaybackStateCompat.Builder()
             .setState(state, position, playbackSpeed)
             .setActions(
@@ -379,13 +370,13 @@ class MusicService : Service() {
             .build()
 
         mediaSession.setPlaybackState(playbackState)
-
+//MediaMetadataCompat = backward compatible
         val metadataBuilder = android.support.v4.media.MediaMetadataCompat.Builder()
             .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_TITLE, currentTitle)
             .putString(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_ARTIST, currentArtist)
             .putLong(android.support.v4.media.MediaMetadataCompat.METADATA_KEY_DURATION, duration)
 
-        if (coverXL.isNotEmpty()) {
+        if (coverXL.isNotBlank()) {
             Glide.with(this)
                 .asBitmap()
                 .load(coverXL)

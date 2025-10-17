@@ -1,29 +1,22 @@
 package com.example.music
 
 import android.content.Context
-import android.view.Gravity
 import android.widget.Toast
-
 
 object MusicQueueManager {
     private val queue = mutableListOf<Song>()
     private var currentSong: Song? = null
     private var currentIndex = -1
-
     fun add(song: Song, context: Context) {
         queue.add(song)
         Toast.makeText(context, "Added to the queue", Toast.LENGTH_LONG).show()
     }
-
     fun getQueue(): List<Song> = queue
-
     fun getCurrent(): Song? = currentSong
-
     fun setCurrentSong(song: Song) {
         currentSong = song
         currentIndex = queue.indexOf(song)
     }
-
     fun playNext(): Song? {
         return if (currentIndex != -1 && currentIndex + 1 < queue.size) {
             currentIndex++
@@ -31,7 +24,6 @@ object MusicQueueManager {
             currentSong
         } else null
     }
-
     fun playPrevious(): Song? {
         return if (currentIndex > 0) {
             currentIndex--
@@ -39,13 +31,10 @@ object MusicQueueManager {
             currentSong
         } else null
     }
-
     fun remove(song: Song) {
         val removedIndex = queue.indexOf(song)
         if (removedIndex == -1) return
-
         queue.removeAt(removedIndex)
-
         if (song == currentSong) {
             if (queue.isNotEmpty()) {
                 currentIndex = minOf(removedIndex, queue.size - 1)
@@ -62,8 +51,7 @@ object MusicQueueManager {
     }
     fun getPlayableSong(song: Song, callback: (Song?) -> Unit) {
         val now = System.currentTimeMillis()
-        val expired = (now - song.lastFetchTime) > 10 * 60 * 1000 // 10 phút
-
+        val expired = (now - song.lastFetchTime) > 10 * 60 * 1000 //10 mins until url expired
         if (song.url.isEmpty() || expired) {
             DeezerApiHelper.refreshPreview(song) { refreshed ->
                 callback(refreshed)
@@ -72,14 +60,11 @@ object MusicQueueManager {
             callback(song)
         }
     }
-
     fun removeQueue(callback: (Song?) -> Unit ) {
         queue.clear()
         currentSong = null
         currentIndex = -1
         callback(null)
     }
-
-
 }
 

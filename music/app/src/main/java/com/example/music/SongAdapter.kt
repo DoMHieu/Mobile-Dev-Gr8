@@ -26,13 +26,11 @@ class SongAdapter(
         val cover: ImageView = itemView.findViewById(R.id.songCover)
         val playingIcon: ImageView = itemView.findViewById(R.id.playingIcon)
     }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_song, parent, false)
         return SongViewHolder(view)
     }
-
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val song = items[position]
         holder.title.text = song.title
@@ -46,12 +44,11 @@ class SongAdapter(
                         RoundedCorners(24)
                     )
                 )
-                    .override(com.bumptech.glide.request.target.Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                    .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                     .placeholder(R.drawable.image_24px)
                     .error(R.drawable.image_24px)
             )
             .into(holder.cover)
-
         //Highlight playing song
         val current = MusicQueueManager.getCurrent()
         if (current != null && current.url == song.url) {
@@ -61,10 +58,8 @@ class SongAdapter(
             holder.itemView.setBackgroundColor(Color.TRANSPARENT)
             holder.playingIcon.visibility = View.GONE
         }
-
         //OnclickListener for queue
         holder.itemView.setOnClickListener { onClick(song) }
     }
-
     override fun getItemCount(): Int = items.size
 }

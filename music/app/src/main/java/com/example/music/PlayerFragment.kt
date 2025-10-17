@@ -29,7 +29,6 @@ import androidx.core.view.isGone
 import android.widget.Toast
 import com.bumptech.glide.request.RequestOptions
 
-
 class PlayerFragment : Fragment() {
     private lateinit var slider: SeekBar
     private lateinit var textCurrentTime: TextView
@@ -41,7 +40,7 @@ class PlayerFragment : Fragment() {
     private lateinit var queueAdapter: SongAdapter
     private var isUserSeeking = false
 
-    // Nhận broadcast từ MusicService
+    //Receiver message from Broadcast
     private val musicReceiver = object : BroadcastReceiver() {
         @SuppressLint("NotifyDataSetChanged")
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -52,14 +51,10 @@ class PlayerFragment : Fragment() {
             val title = intent?.getStringExtra("title") ?: ""
             val artist = intent?.getStringExtra("artist") ?: ""
             val coverUrlXL = intent?.getStringExtra("cover_xl") ?: ""
-
             queueAdapter.notifyDataSetChanged()
-
-            // Toolbar
-            val toolbar = view?.findViewById<MaterialToolbar>(R.id.Toolbar)
+            val toolbar = view?.findViewById<MaterialToolbar>(R.id.Toolbar)   // Toolbar editor
             toolbar?.title = title
             toolbar?.subtitle = artist
-
             //Cover_xl
             if (coverUrlXL.isNotBlank()) {
                 Glide.with(requireContext())
@@ -96,17 +91,14 @@ class PlayerFragment : Fragment() {
             )
         }
     }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.fragment_player, container, false)
-
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         slider = view.findViewById(R.id.progressSlider)
         textCurrentTime = view.findViewById(R.id.songCurrentProgress)
         textTotalTime = view.findViewById(R.id.songTotalTime)
@@ -114,9 +106,7 @@ class PlayerFragment : Fragment() {
         repeatButton = view.findViewById(R.id.repeatButton)
         coverImage = view.findViewById(R.id.imageView)
         rvQueue = view.findViewById(R.id.rvQueue)
-
-        // Nút play/pause và repeat
-        playPauseButton.setOnClickListener { sendMusicCommand("TOGGLE_PLAY") }
+        playPauseButton.setOnClickListener { sendMusicCommand("TOGGLE_PLAY") } //send message to intent
         repeatButton.setOnClickListener { sendMusicCommand("TOGGLE_REPEAT") }
 
         // Slider
@@ -202,14 +192,12 @@ class PlayerFragment : Fragment() {
                     viewHolder: RecyclerView.ViewHolder,
                     target: RecyclerView.ViewHolder
                 ): Boolean = false
-
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val position = viewHolder.bindingAdapterPosition
                     val song = MusicQueueManager.getQueue()[position]
                     val isCurrent = (song == MusicQueueManager.getCurrent())
                     MusicQueueManager.remove(song)
                     queueAdapter.notifyItemRemoved(position)
-
                     if (isCurrent) {//change song if delete currentsong
                         val next = MusicQueueManager.getCurrent()
                         if (next != null) {

@@ -24,10 +24,7 @@ class SearchFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.fragment_search, container, false)
-    private val randomKeywords = listOf(
-        "love", "summer", "dance", "rock", "deco*27",
-        "PinocchioP", "acoustic", "chill", "happy", "Hatsune Miku"
-    )
+    private val randomKeywords = listOf("love","summer","dance","rock","deco*27","PinocchioP","acoustic","chill","happy","Hatsune Miku")
     private fun getRandomKeyword(): String {
         return randomKeywords.random()
     }
@@ -61,7 +58,6 @@ class SearchFragment : Fragment() {
 
         searchInput.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val keyword = s.toString().trim()
                 if (keyword.isNotEmpty()) {
@@ -69,7 +65,6 @@ class SearchFragment : Fragment() {
                 }; else {val randomKey = getRandomKeyword()
                     searchSongs(randomKey)}
             }
-
             override fun afterTextChanged(s: android.text.Editable?) {}
         })
     }

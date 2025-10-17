@@ -9,5 +9,3 @@ data class Song(
     val coverXL: String,
     var lastFetchTime: Long = 0
 )
-
-
