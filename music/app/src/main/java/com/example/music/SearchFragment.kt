@@ -24,7 +24,7 @@ class SearchFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.fragment_search, container, false)
-    private val randomKeywords = listOf("love","summer","dance","rock","deco*27","PinocchioP","acoustic","chill","happy","Hatsune Miku")
+    private val randomKeywords = listOf("love","summer","dance","rock","deco*27","PinocchioP","acoustic","chill","happy","Hatsune Miku","AJR","Disco")
     private fun getRandomKeyword(): String {
         return randomKeywords.random()
     }

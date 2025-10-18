@@ -40,22 +40,19 @@ class PlayerFragment : Fragment() {
     private lateinit var queueAdapter: SongAdapter
     private var isUserSeeking = false
 
-    //Receiver message from Broadcast
+    //Receiver message from Broadcast (Intent)
     private val musicReceiver = object : BroadcastReceiver() {
         @SuppressLint("NotifyDataSetChanged")
         override fun onReceive(context: Context?, intent: Intent?) {
-            val position = intent?.getLongExtra("position", 0L) ?: 0L
-            val duration = intent?.getLongExtra("duration", 0L) ?: 0L
-            val isPlaying = intent?.getBooleanExtra("isPlaying", false) ?: false
-            val isRepeating = intent?.getBooleanExtra("isRepeating", false) ?: false
+            //Get Song data information
             val title = intent?.getStringExtra("title") ?: ""
             val artist = intent?.getStringExtra("artist") ?: ""
-            val coverUrlXL = intent?.getStringExtra("cover_xl") ?: ""
             queueAdapter.notifyDataSetChanged()
             val toolbar = view?.findViewById<MaterialToolbar>(R.id.Toolbar)   // Toolbar editor
             toolbar?.title = title
             toolbar?.subtitle = artist
-            //Cover_xl
+            //Music CoverXL Glide
+            val coverUrlXL = intent?.getStringExtra("cover_xl") ?: ""
             if (coverUrlXL.isNotBlank()) {
                 Glide.with(requireContext())
                     .load(coverUrlXL)
@@ -72,20 +69,25 @@ class PlayerFragment : Fragment() {
                 coverImage.setImageResource(R.drawable.image_24px)
             }
 
-            // slider, replaced with seekbar, still keep using slider as variable
+            // slider, have been replaced with seekbar, still keep using slider as variable
+            val position = intent?.getLongExtra("position", 0L) ?: 0L
+            val duration = intent?.getLongExtra("duration", 0L) ?: 0L
             if (!isUserSeeking && duration > 0) {
                 if (slider.max != duration.toInt()) {
                     slider.max = duration.toInt()
                 }
                 slider.progress = position.toInt().coerceAtMost(duration.toInt())
             }
-
             textCurrentTime.text = formatTime(position)
             textTotalTime.text = if (duration > 0) formatTime(duration) else "--:--"
+
+            //Play, Loop button
+            val isPlaying = intent?.getBooleanExtra("isPlaying", false) ?: false
             playPauseButton.setImageResource(
                 if (isPlaying) R.drawable.pause_24px else R.drawable.play
             )
             playPauseButton.tag = if (isPlaying) "pause" else "play"
+            val isRepeating = intent?.getBooleanExtra("isRepeating", false) ?: false
             repeatButton.setImageResource(
                 if (isRepeating) R.drawable.repeat_one_24px else R.drawable.repeat
             )
@@ -109,19 +111,17 @@ class PlayerFragment : Fragment() {
         playPauseButton.setOnClickListener { sendMusicCommand("TOGGLE_PLAY") } //send message to intent
         repeatButton.setOnClickListener { sendMusicCommand("TOGGLE_REPEAT") }
 
-        // Slider
+        // SeekeBar change listener
         slider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
                 isUserSeeking = true
             }
-
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 isUserSeeking = false
                 seekBar?.let {
                     sendMusicCommand("SEEK_TO", it.progress.toLong())
                 }
             }
-
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
                     textCurrentTime.text = formatTime(progress.toLong())

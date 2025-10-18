@@ -63,7 +63,7 @@ class MusicService : Service() {
         }
     }
 
-    private val updateRunnable = object : Runnable { //create Runnable data, to check if exoPlayer is running
+    private val updateRunnable = object : Runnable { //create Runnable data
         override fun run() {
             if (::exoPlayer.isInitialized) {
                 sendProgressBroadcast()
@@ -345,7 +345,6 @@ class MusicService : Service() {
         val manager = getSystemService(NotificationManager::class.java)
         manager.notify(NOTIFICATION_ID, notification)
     }
-
     // Update media session playback state and metadata
     private fun updatePlaybackState() {
         if (!::exoPlayer.isInitialized) return
@@ -388,7 +387,6 @@ class MusicService : Service() {
                         )
                         mediaSession.setMetadata(metadataBuilder.build())
                     }
-
                     override fun onLoadCleared(placeholder: Drawable?) {}
                 })
         } else {

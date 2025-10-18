@@ -51,7 +51,7 @@ class SongAdapter(
             .into(holder.cover)
         //Highlight playing song
         val current = MusicQueueManager.getCurrent()
-        if (current != null && current.url == song.url) {
+        if (current != null && current.id == song.id) {
             holder.itemView.setBackgroundResource(R.drawable.playlist_current_play)
             holder.playingIcon.visibility = View.VISIBLE
         } else {
